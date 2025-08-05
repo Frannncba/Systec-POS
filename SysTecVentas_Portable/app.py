@@ -123,8 +123,25 @@ def init_db():
     );
     ''')
 
-    # Insertar configuración inicial
-    c.execute("INSERT OR IGNORE INTO configuracion (id, nombre_empresa, modo_oscuro, umbral_stock_minimo) VALUES (1, 'SysTec Ventas', 1, 5)")
+    # Insertar configuración inicial solo si no existe
+    try:
+        c.execute("SELECT COUNT(*) FROM configuracion")
+        config_count = c.fetchone()[0]
+        if config_count == 0:
+            # Intentar estructura clave-valor
+            c.execute("INSERT INTO configuracion (clave, valor, descripcion) VALUES (?, ?, ?)", 
+                     ('empresa_nombre', 'SysTec Ventas', 'Nombre de la empresa'))
+            c.execute("INSERT INTO configuracion (clave, valor, descripcion) VALUES (?, ?, ?)", 
+                     ('modo_oscuro', 'true', 'Modo oscuro activo'))
+            c.execute("INSERT INTO configuracion (clave, valor, descripcion) VALUES (?, ?, ?)", 
+                     ('umbral_stock_minimo', '5', 'Umbral mínimo de stock'))
+    except:
+        # Si falla, intentar estructura tradicional
+        try:
+            c.execute("INSERT OR IGNORE INTO configuracion (id, nombre_empresa, modo_oscuro, umbral_stock_minimo) VALUES (1, 'SysTec Ventas', 1, 5)")
+        except:
+            pass
+    
     c.execute("INSERT OR IGNORE INTO usuarios (username, password_hash, rol) VALUES (?, ?, ?)", ('admin', generate_password_hash('admin123'), 'admin'))
     c.execute("INSERT OR IGNORE INTO usuarios (username, password_hash, rol) VALUES (?, ?, ?)", ('systec_root', generate_password_hash('qwer1234'), 'root'))
 
