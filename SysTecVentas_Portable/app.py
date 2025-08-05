@@ -156,37 +156,84 @@ def init_db():
 # ========== FUNCIONES DE CONFIGURACIÓN ==========
 def cargar_configuracion():
     conn = get_db_connection()
-    config = conn.execute("SELECT * FROM configuracion WHERE id = 1").fetchone()
-    conn.close()
     
-    if config:
+    # Intentar con estructura clave-valor primero
+    try:
+        config_data = {}
+        cursor = conn.cursor()
+        cursor.execute("SELECT clave, valor FROM configuracion WHERE clave IN (?, ?, ?)", 
+                      ('empresa_nombre', 'modo_oscuro', 'umbral_stock_minimo'))
+        for row in cursor.fetchall():
+            config_data[row[0]] = row[1]
+        
+        conn.close()
+        
         return {
-            "empresa_nombre": config['nombre_empresa'] or "SysTec Ventas",
-            "modo_oscuro": bool(config['modo_oscuro']),
-            "umbral_stock_minimo": config['umbral_stock_minimo'] or 5
+            "empresa_nombre": config_data.get('empresa_nombre', "SysTec Ventas"),
+            "modo_oscuro": config_data.get('modo_oscuro', 'true').lower() == 'true',
+            "umbral_stock_minimo": int(config_data.get('umbral_stock_minimo', 5))
         }
-    return CONFIGURACION_DEFAULT
+    except:
+        # Fallback a estructura original
+        try:
+            config = conn.execute("SELECT * FROM configuracion WHERE id = 1").fetchone()
+            conn.close()
+            
+            if config:
+                return {
+                    "empresa_nombre": config['nombre_empresa'] or "SysTec Ventas",
+                    "modo_oscuro": bool(config['modo_oscuro']),
+                    "umbral_stock_minimo": config['umbral_stock_minimo'] or 5
+                }
+        except:
+            pass
+        
+        conn.close()
+        return CONFIGURACION_DEFAULT
 
 def guardar_configuracion(nombre_empresa=None, modo_oscuro=None, umbral_stock=None):
     conn = get_db_connection()
-    updates = []
-    params = []
+    cursor = conn.cursor()
     
-    if nombre_empresa is not None:
-        updates.append("nombre_empresa = ?")
-        params.append(nombre_empresa)
-    if modo_oscuro is not None:
-        updates.append("modo_oscuro = ?")
-        params.append(1 if modo_oscuro else 0)
-    if umbral_stock is not None:
-        updates.append("umbral_stock_minimo = ?")
-        params.append(umbral_stock)
-    
-    if updates:
-        params.append(1)  # WHERE id = 1
-        conn.execute(f"UPDATE configuracion SET {', '.join(updates)} WHERE id = ?", params)
+    # Intentar con estructura clave-valor
+    try:
+        if nombre_empresa is not None:
+            cursor.execute("INSERT OR REPLACE INTO configuracion (clave, valor, descripcion) VALUES (?, ?, ?)",
+                         ('empresa_nombre', nombre_empresa, 'Nombre de la empresa'))
+        if modo_oscuro is not None:
+            cursor.execute("INSERT OR REPLACE INTO configuracion (clave, valor, descripcion) VALUES (?, ?, ?)",
+                         ('modo_oscuro', 'true' if modo_oscuro else 'false', 'Modo oscuro activo'))
+        if umbral_stock is not None:
+            cursor.execute("INSERT OR REPLACE INTO configuracion (clave, valor, descripcion) VALUES (?, ?, ?)",
+                         ('umbral_stock_minimo', str(umbral_stock), 'Umbral mínimo de stock'))
+        
         conn.commit()
-    conn.close()
+        conn.close()
+        return
+    except:
+        # Fallback a estructura original
+        try:
+            updates = []
+            params = []
+            
+            if nombre_empresa is not None:
+                updates.append("nombre_empresa = ?")
+                params.append(nombre_empresa)
+            if modo_oscuro is not None:
+                updates.append("modo_oscuro = ?")
+                params.append(1 if modo_oscuro else 0)
+            if umbral_stock is not None:
+                updates.append("umbral_stock_minimo = ?")
+                params.append(umbral_stock)
+            
+            if updates:
+                params.append(1)  # WHERE id = 1
+                conn.execute(f"UPDATE configuracion SET {', '.join(updates)} WHERE id = ?", params)
+                conn.commit()
+        except:
+            pass
+        
+        conn.close()
 
 # ========== FUNCIÓN DE LOG ==========
 def registrar_log(accion, tabla_afectada=None, registro_id=None, detalles=None):
