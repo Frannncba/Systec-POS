@@ -9,7 +9,7 @@ import io
 app = Flask(__name__)
 app.secret_key = 'clave-secreta-systec-2025'
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
-app.config['DATABASE'] = 'ventas.db'
+app.config['DATABASE'] = 'systec_ventas.db'
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 # ========== CONFIGURACIÓN GLOBAL ==========
