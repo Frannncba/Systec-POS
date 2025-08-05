@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="flex items-center justify-center min-h-screen bg-gray-100">
+  <div class="bg-white rounded-2xl shadow-xl p-8 max-w-lg w-full text-center">
+    <h1 class="text-3xl font-bold text-red-600 mb-4">Licencia no válida</h1>
+
+    {% if estado == 'expirada' %}
+      <p class="text-gray-700 text-lg mb-4">La licencia de este sistema ha expirado. Para continuar usando el software, por favor comunicate con el proveedor.</p>
+    {% elif estado == 'invalida' %}
+      <p class="text-gray-700 text-lg mb-4">Esta licencia no es válida para este equipo. Se ha detectado un uso no autorizado.</p>
+    {% elif estado == 'sin_licencia' %}
+      <p class="text-gray-700 text-lg mb-4">No se encontró una licencia activa. El sistema requiere una licencia para funcionar correctamente.</p>
+    {% endif %}
+
+    <div class="mt-6">
+      <a href="mailto:francorodriguez33@gmail.com" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg">Contactar al proveedor</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

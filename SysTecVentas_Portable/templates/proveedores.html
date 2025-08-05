@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Proveedores - SysTec Ventas</title>
+    <style>
+        body { font-family: sans-serif; background: #f8f8f8; padding: 20px; }
+        .box { background: white; padding: 20px; margin-bottom: 30px; border-radius: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid #ccc; padding: 8px; }
+        input, button { width: 100%; padding: 10px; margin: 8px 0; }
+    </style>
+</head>
+<body>
+
+    {% include 'navbar.html' %}
+
+    <h1>🚚 Gestión de Proveedores</h1>
+
+    <div class="box">
+        <h2>Agregar nuevo proveedor</h2>
+        <form method="POST" action="/proveedor/nuevo">
+            <input type="text" name="nombre" placeholder="Nombre" required>
+            <input type="text" name="telefono" placeholder="Teléfono">
+            <input type="email" name="email" placeholder="Correo electrónico">
+            <input type="text" name="direccion" placeholder="Dirección">
+            <button type="submit">Guardar</button>
+        </form>
+    </div>
+
+    <div class="box">
+        <h2>Proveedores registrados</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Teléfono</th>
+                    <th>Email</th>
+                    <th>Dirección</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in proveedores %}
+                <tr>
+                    <td>{{ p.nombre }}</td>
+                    <td>{{ p.telefono }}</td>
+                    <td>{{ p.email }}</td>
+                    <td>{{ p.direccion }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <a href="/dashboard">⬅ Volver al panel</a>
+
+</body>
+</html>

@@ -1,0 +1,2084 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Punto de Venta - SysTec</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        :root[data-theme="dark"] {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --accent: #10b981;
+            --accent-hover: #059669;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --success: #10b981;
+            --border: #475569;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            --overlay-bg: rgba(15, 23, 42, 0.95);
+        }
+
+        :root[data-theme="light"] {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-tertiary: #e2e8f0;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --accent: #10b981;
+            --accent-hover: #059669;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --success: #10b981;
+            --border: #e2e8f0;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --overlay-bg: rgba(255, 255, 255, 0.95);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+            position: fixed;
+            height: 100vh;
+            z-index: 1000;
+        }
+
+        .logo-section {
+            padding: 2rem 1.5rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo-placeholder {
+            width: 80px;
+            height: 80px;
+            background: var(--accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: white;
+            font-weight: bold;
+            font-size: 1.5rem;
+            box-shadow: var(--card-shadow);
+        }
+
+        .logo-section h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .nav-menu {
+            flex: 1;
+            padding: 1rem 0;
+            overflow-y: auto;
+        }
+
+        .nav-item {
+            display: block;
+            padding: 0.875rem 1.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+
+        .nav-item:hover {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent);
+        }
+
+        .nav-item.active {
+            background: var(--accent);
+            color: white !important;
+            border-radius: 8px;
+            margin: 0 1rem;
+            font-weight: 500;
+        }
+
+        .nav-item i {
+            width: 20px;
+            margin-right: 0.75rem;
+            text-align: center;
+        }
+
+        .nav-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .logout-btn {
+            color: var(--danger) !important;
+        }
+
+        .logout-btn:hover {
+            background: rgba(239, 68, 68, 0.1) !important;
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            overflow: hidden;
+            background: var(--bg-primary);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .pos-header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .pos-title {
+            position: relative;
+        }
+
+        .pos-title h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .pos-stats {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        /* POS CONTENT */
+        .pos-content {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            overflow: hidden;
+        }
+
+        /* PANEL DE PRODUCTOS */
+        .productos-panel {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-tertiary);
+        }
+
+        .panel-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .search-filters {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        .category-select {
+            padding: 0.75rem 1rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            cursor: pointer;
+        }
+
+        .productos-grid {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            max-height: calc(100vh - 300px);
+        }
+
+        .producto-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .producto-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.15);
+        }
+
+        .producto-emoji {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .producto-nombre {
+            font-weight: 600;
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+            line-height: 1.2;
+        }
+
+        .producto-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .producto-precio {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .producto-stock {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+        }
+
+        /* PANEL DE CARRITO */
+        .carrito-panel {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .carrito-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-tertiary);
+        }
+
+        .carrito-items {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            max-height: 400px;
+        }
+
+        .carrito-item {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            transition: all 0.3s ease;
+        }
+
+        .carrito-item:hover {
+            border-color: var(--accent);
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+        }
+
+        .item-nombre {
+            font-weight: 600;
+            font-size: 0.875rem;
+            flex: 1;
+        }
+
+        .item-remove {
+            color: var(--danger);
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .item-remove:hover {
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .item-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 0.75rem;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .qty-btn {
+            width: 28px;
+            height: 28px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .qty-btn:hover {
+            border-color: var(--accent);
+            background: var(--accent);
+            color: white;
+        }
+
+        .qty-input {
+            width: 50px;
+            text-align: center;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .item-subtotal {
+            font-weight: 700;
+            color: var(--accent);
+            font-size: 1rem;
+        }
+
+        .carrito-vacio {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: var(--text-secondary);
+        }
+
+        .carrito-vacio i {
+            font-size: 3rem;
+            opacity: 0.5;
+            margin-bottom: 1rem;
+        }
+
+        /* FOOTER DE CARRITO */
+        .carrito-footer {
+            padding: 1.5rem;
+            border-top: 1px solid var(--border);
+            background: var(--bg-tertiary);
+        }
+
+        .total-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .total-value {
+            color: var(--accent);
+            font-size: 1.5rem;
+        }
+
+        .pago-section {
+            margin-bottom: 1rem;
+        }
+
+        .pago-methods {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .pago-btn {
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+        }
+
+        .pago-btn.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .pago-btn.credito {
+            background: var(--warning);
+            border-color: var(--warning);
+            color: white;
+        }
+
+        .pago-btn.credito.active {
+            background: var(--warning);
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+        }
+
+        .dinero-input {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .cambio-info {
+            text-align: center;
+            font-weight: 600;
+            padding: 0.5rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+        }
+
+        .cambio-positivo {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent);
+        }
+
+        .cambio-negativo {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        /* CLIENTE SECTION */
+        .cliente-section {
+            margin-bottom: 1rem;
+        }
+
+        .cliente-row {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .cliente-select {
+            flex: 1;
+            padding: 0.75rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+        }
+
+        .cliente-btn {
+            padding: 0.75rem;
+            background: var(--info);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .cliente-btn:hover {
+            background: #2563eb;
+        }
+
+        .cliente-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            padding: 0.5rem;
+            border-radius: 6px;
+        }
+
+        .status-verde {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .status-amarillo {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .status-rojo {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        .procesar-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.125rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .procesar-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        }
+
+        .procesar-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+            margin-right: 0.5rem;
+        }
+
+        .procesar-btn.loading .loading {
+            display: inline-block;
+        }
+
+        /* MODAL */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--overlay-bg);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-overlay.show .modal-content {
+            transform: scale(1);
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            color: white;
+            font-size: 2rem;
+            animation: pulse 2s infinite;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--accent);
+        }
+
+        .modal-details {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .modal-total {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin: 0.5rem 0;
+        }
+
+        /* CLIENTE MODAL */
+        .form-group {
+            margin-bottom: 1rem;
+            text-align: left;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+
+        .btn-secondary {
+            padding: 0.75rem 1.5rem;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        .btn-primary {
+            padding: 0.75rem 1.5rem;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+        }
+
+        /* CONFIGURACIÓN MODAL */
+        .config-section {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .config-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--accent);
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1024px) {
+            .pos-content {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .productos-panel {
+                order: 2;
+            }
+            
+            .carrito-panel {
+                order: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                position: fixed;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .pos-content {
+                padding: 1rem;
+            }
+            
+            .pos-header {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .pos-stats {
+                gap: 1rem;
+            }
+            
+            .search-filters {
+                flex-direction: column;
+            }
+
+            .pago-methods {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ANIMACIONES */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes slideInUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .slide-in {
+            animation: slideInUp 0.3s ease-out;
+        }
+
+        /* THEME TOGGLE */
+        .theme-toggle {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 50px;
+            height: 50px;
+            background: var(--accent);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.25rem;
+            cursor: pointer;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+            background: var(--accent-hover);
+        }
+
+        /* CONFIG TOGGLE */
+        .config-toggle {
+            position: fixed;
+            bottom: 2rem;
+            right: 5rem;
+            width: 50px;
+            height: 50px;
+            background: var(--info);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.25rem;
+            cursor: pointer;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .config-toggle:hover {
+            transform: scale(1.1);
+            background: #2563eb;
+        }
+    </style>
+</head>
+<body>
+    <div class="layout">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="logo-section">
+                <div class="logo-placeholder">ST</div>
+                <h1>SysTec Software</h1>
+            </div>
+            
+            <nav class="nav-menu">
+                <a href="#" class="nav-item">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </a>
+                
+                <a href="#" class="nav-item">
+                    <i class="fas fa-box"></i>
+                    <span>Productos</span>
+                </a>
+                
+                <a href="#" class="nav-item">
+                    <i class="fas fa-users"></i>
+                    <span>Clientes</span>
+                </a>
+                
+                <a href="#" class="nav-item">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Ventas</span>
+                </a>
+                
+                <a href="#" class="nav-item">
+                    <i class="fas fa-credit-card"></i>
+                    <span>Créditos</span>
+                </a>
+                
+                <a href="#" class="nav-item active">
+                    <i class="fas fa-cash-register"></i>
+                    <span>Punto de Venta</span>
+                </a>
+                
+                <a href="#" class="nav-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Configuración</span>
+                </a>
+            </nav>
+            
+            <div class="nav-footer">
+                <a href="#" class="nav-item logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Cerrar Sesión</span>
+                </a>
+                
+                <div style="margin-top: 1rem; text-align: center; font-size: 0.75rem; color: var(--text-secondary);">
+                    <div>Usuario: Admin</div>
+                    <div>© SysTec Software</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            <!-- HEADER POS -->
+            <header class="pos-header">
+                <div class="pos-title">
+                    <h1><i class="fas fa-cash-register"></i> POS Premium</h1>
+                    <p style="color: var(--text-secondary);">Sistema de Ventas Avanzado con Créditos</p>
+                </div>
+                
+                <div class="pos-stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="ventas-hoy">15</div>
+                        <div class="stat-label">Ventas Hoy</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="total-hoy">$2,450.00</div>
+                        <div class="stat-label">Total Hoy</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="creditos-pendientes">$850.00</div>
+                        <div class="stat-label">Créditos</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="items-carrito">0</div>
+                        <div class="stat-label">Items</div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- CONTENIDO POS -->
+            <div class="pos-content">
+                <!-- PANEL DE PRODUCTOS -->
+                <div class="productos-panel">
+                    <div class="panel-header">
+                        <h2 class="panel-title">
+                            <i class="fas fa-boxes"></i>
+                            Productos
+                        </h2>
+                        
+                        <div class="search-filters">
+                            <div class="search-box">
+                                <i class="fas fa-search search-icon"></i>
+                                <input type="text" class="search-input" id="search-productos" 
+                                       placeholder="Buscar por nombre o código..." autocomplete="off">
+                            </div>
+                            
+                            <select class="category-select" id="filter-categoria">
+                                <option value="Todas">Todas las categorías</option>
+                                <option value="Bebidas">Bebidas</option>
+                                <option value="Snacks">Snacks</option>
+                                <option value="Comida">Comida</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="productos-grid" id="productos-container">
+                        <!-- Productos de ejemplo -->
+                    </div>
+                </div>
+                
+                <!-- PANEL DE CARRITO -->
+                <div class="carrito-panel">
+                    <div class="carrito-header">
+                        <h2 class="panel-title">
+                            <i class="fas fa-shopping-cart"></i>
+                            Carrito (<span id="carrito-count">0</span>)
+                        </h2>
+                    </div>
+                    
+                    <div class="carrito-items" id="carrito-container">
+                        <div class="carrito-vacio">
+                            <i class="fas fa-shopping-cart"></i>
+                            <p>Carrito vacío</p>
+                            <small>Selecciona productos para comenzar</small>
+                        </div>
+                    </div>
+                    
+                    <div class="carrito-footer">
+                        <div class="total-section">
+                            <span>Total:</span>
+                            <span class="total-value" id="total-carrito">$0.00</span>
+                        </div>
+                        
+                        <div class="pago-section">
+                            <div class="pago-methods">
+                                <button class="pago-btn active" data-metodo="efectivo">
+                                    <i class="fas fa-money-bill-wave"></i>
+                                    Efectivo
+                                </button>
+                                <button class="pago-btn" data-metodo="tarjeta">
+                                    <i class="fas fa-credit-card"></i>
+                                    Tarjeta
+                                </button>
+                                <button class="pago-btn" data-metodo="mercadopago">
+                                    <i class="fab fa-cc-mastercard"></i>
+                                    MercadoPago
+                                </button>
+                                <button class="pago-btn" data-metodo="qr">
+                                    <i class="fas fa-qrcode"></i>
+                                    QR
+                                </button>
+                                <button class="pago-btn" data-metodo="transferencia">
+                                    <i class="fas fa-university"></i>
+                                    Transferencia
+                                </button>
+                                <button class="pago-btn credito" data-metodo="credito">
+                                    <i class="fas fa-clock"></i>
+                                    A Crédito
+                                </button>
+                            </div>
+                            
+                            <div id="efectivo-section">
+                                <input type="number" class="dinero-input" id="dinero-recibido" 
+                                       placeholder="Dinero recibido" step="0.01">
+                                <div class="cambio-info" id="cambio-info" style="display: none;"></div>
+                            </div>
+                            
+                            <div class="cliente-section">
+                                <div class="cliente-row">
+                                    <select class="cliente-select" id="cliente-select">
+                                        <option value="">Cliente general</option>
+                                    </select>
+                                    <button class="cliente-btn" onclick="abrirModalCliente()">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                                <div class="cliente-status" id="cliente-status" style="display: none;"></div>
+                            </div>
+                            
+                            <div id="credito-warning" style="display: none; background: rgba(245, 158, 11, 0.1); color: var(--warning); padding: 0.75rem; border-radius: 8px; text-align: center; margin-bottom: 1rem; font-size: 0.875rem;">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                Para venta a crédito debe seleccionar un cliente
+                            </div>
+                        </div>
+                        
+                        <button class="procesar-btn" id="procesar-venta" disabled>
+                            <span class="loading"></span>
+                            <i class="fas fa-check-circle"></i>
+                            Procesar Venta
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL DE ÉXITO -->
+    <div class="modal-overlay" id="success-modal">
+        <div class="modal-content">
+            <div class="success-icon">
+                <i class="fas fa-check"></i>
+            </div>
+            <h3 class="modal-title">¡Venta Exitosa!</h3>
+            <div class="modal-details">
+                <div>Ticket #<span id="modal-ticket">0001</span></div>
+                <div class="modal-total">Total: <span id="modal-total">$0.00</span></div>
+                <div id="modal-metodo">Método: <span id="modal-metodo-valor">Efectivo</span></div>
+                <div id="modal-cliente" style="display: none;">Cliente: <span id="modal-cliente-valor"></span></div>
+                <div id="modal-cambio" style="display: none;">Cambio: <span id="modal-cambio-valor">$0.00</span></div>
+                <div id="modal-credito" style="display: none; color: var(--warning);">
+                    <i class="fas fa-clock"></i>
+                    Venta a crédito registrada
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CLIENTE -->
+    <div class="modal-overlay" id="cliente-modal">
+        <div class="modal-content">
+            <h3 class="modal-title">
+                <i class="fas fa-user-plus"></i>
+                Nuevo Cliente
+            </h3>
+            <form id="cliente-form">
+                <div class="form-group">
+                    <label class="form-label">Nombre completo *</label>
+                    <input type="text" class="form-input" id="cliente-nombre" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Teléfono</label>
+                    <input type="tel" class="form-input" id="cliente-telefono">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" id="cliente-email">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">DNI/CUIT</label>
+                    <input type="text" class="form-input" id="cliente-dni">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Dirección</label>
+                    <input type="text" class="form-input" id="cliente-direccion">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Límite de Crédito ($)</label>
+                    <input type="number" class="form-input" id="cliente-limite" value="1000" step="50">
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn-secondary" onclick="cerrarModalCliente()">Cancelar</button>
+                    <button type="submit" class="btn-primary">Guardar Cliente</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL CONFIGURACIÓN -->
+    <div class="modal-overlay" id="config-modal">
+        <div class="modal-content">
+            <h3 class="modal-title">
+                <i class="fas fa-cog"></i>
+                Configuración de Créditos
+            </h3>
+            
+            <div class="config-section">
+                <div class="config-title">Días de Mora</div>
+                <div class="form-group">
+                    <label class="form-label">Días hasta mora (amarillo)</label>
+                    <input type="number" class="form-input" id="config-dias-amarillo" value="7" min="1" max="30">
+                    <small style="color: var(--text-secondary);">Después de estos días, el cliente aparecerá en amarillo</small>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Días para mora crítica (rojo)</label>
+                    <input type="number" class="form-input" id="config-dias-rojo" value="15" min="1" max="60">
+                    <small style="color: var(--text-secondary);">Después de estos días, el cliente aparecerá en rojo</small>
+                </div>
+            </div>
+            
+            <div class="config-section">
+                <div class="config-title">Configuración General</div>
+                <div class="form-group">
+                    <label class="form-label">Límite de crédito por defecto ($)</label>
+                    <input type="number" class="form-input" id="config-limite-default" value="1000" step="50">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">
+                        <input type="checkbox" id="config-requiere-cliente" checked style="margin-right: 0.5rem;">
+                        Requerir cliente para ventas a crédito
+                    </label>
+                </div>
+            </div>
+            
+            <div class="modal-buttons">
+                <button type="button" class="btn-secondary" onclick="cerrarModalConfig()">Cancelar</button>
+                <button type="button" class="btn-primary" onclick="guardarConfiguracion()">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- THEME TOGGLE -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="Cambiar tema">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <!-- CONFIG TOGGLE -->
+    <button class="config-toggle" onclick="abrirModalConfig()" title="Configuración">
+        <i class="fas fa-cog"></i>
+    </button>
+
+    <script>
+        // ========== VARIABLES GLOBALES ==========
+        let carrito = [];
+        let productos = [
+            // Productos de ejemplo
+            { id: 1, nombre: "Coca Cola 500ml", precio: 2.50, stock: 50, categoria: "Bebidas", emoji: "🥤" },
+            { id: 2, nombre: "Agua Mineral 1L", precio: 1.20, stock: 30, categoria: "Bebidas", emoji: "💧" },
+            { id: 3, nombre: "Papas Fritas", precio: 1.80, stock: 25, categoria: "Snacks", emoji: "🍟" },
+            { id: 4, nombre: "Galletas Oreo", precio: 2.20, stock: 15, categoria: "Snacks", emoji: "🍪" },
+            { id: 5, nombre: "Sandwich Jamón", precio: 4.50, stock: 12, categoria: "Comida", emoji: "🥪" },
+            { id: 6, nombre: "Café Americano", precio: 2.80, stock: 40, categoria: "Bebidas", emoji: "☕" },
+            { id: 7, nombre: "Donut Glaseada", precio: 1.90, stock: 20, categoria: "Snacks", emoji: "🍩" },
+            { id: 8, nombre: "Pizza Slice", precio: 3.20, stock: 18, categoria: "Comida", emoji: "🍕" }
+        ];
+
+        let clientes = [
+            { 
+                id: 1, 
+                nombre: "Juan Pérez", 
+                telefono: "123456789", 
+                email: "juan@email.com",
+                dni: "12345678",
+                direccion: "Calle 123",
+                limiteCredito: 1500,
+                deudaActual: 0,
+                ultimaCompra: null,
+                estado: "verde" // verde, amarillo, rojo
+            },
+            { 
+                id: 2, 
+                nombre: "María García", 
+                telefono: "987654321", 
+                email: "maria@email.com",
+                dni: "87654321",
+                direccion: "Av. Principal 456",
+                limiteCredito: 2000,
+                deudaActual: 350,
+                ultimaCompra: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 días atrás
+                estado: "amarillo"
+            },
+            { 
+                id: 3, 
+                nombre: "Carlos López", 
+                telefono: "456789123", 
+                email: "carlos@email.com",
+                dni: "45678912",
+                direccion: "Barrio Norte 789",
+                limiteCredito: 1000,
+                deudaActual: 800,
+                ultimaCompra: new Date(Date.now() - 18 * 24 * 60 * 60 * 1000), // 18 días atrás
+                estado: "rojo"
+            }
+        ];
+
+        let productosFiltrados = [...productos];
+        let metodoPago = 'efectivo';
+        let ventaProcesando = false;
+
+        // Configuración
+        let config = {
+            diasAmarillo: 7,
+            diasRojo: 15,
+            limiteCreditoDefault: 1000,
+            requiereCliente: true
+        };
+
+        // ========== INICIALIZACIÓN ==========
+        document.addEventListener('DOMContentLoaded', function() {
+            renderizarProductos();
+            cargarClientes();
+            inicializarEventListeners();
+            actualizarEstadisticas();
+            document.getElementById('search-productos').focus();
+        });
+
+        function inicializarEventListeners() {
+            // Búsqueda de productos
+            document.getElementById('search-productos').addEventListener('input', debounce(buscarProductos, 300));
+            document.getElementById('filter-categoria').addEventListener('change', buscarProductos);
+            
+            // Métodos de pago
+            document.querySelectorAll('.pago-btn').forEach(btn => {
+                btn.addEventListener('click', () => cambiarMetodoPago(btn.dataset.metodo));
+            });
+            
+            // Dinero recibido
+            document.getElementById('dinero-recibido').addEventListener('input', calcularCambio);
+            
+            // Cliente seleccionado
+            document.getElementById('cliente-select').addEventListener('change', actualizarEstadoCliente);
+            
+            // Procesar venta
+            document.getElementById('procesar-venta').addEventListener('click', procesarVenta);
+            
+            // Form cliente
+            document.getElementById('cliente-form').addEventListener('submit', guardarCliente);
+            
+            // Cerrar modales con click fuera o ESC
+            document.querySelectorAll('.modal-overlay').forEach(modal => {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        cerrarModal();
+                        cerrarModalCliente();
+                        cerrarModalConfig();
+                    }
+                });
+            });
+            
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    cerrarModal();
+                    cerrarModalCliente();
+                    cerrarModalConfig();
+                }
+            });
+        }
+
+        // ========== GESTIÓN DE CLIENTES ==========
+        function cargarClientes() {
+            const select = document.getElementById('cliente-select');
+            select.innerHTML = '<option value="">Cliente general</option>';
+            
+            clientes.forEach(cliente => {
+                const option = document.createElement('option');
+                option.value = cliente.id;
+                option.textContent = `${cliente.nombre} ${getEstadoIcon(cliente.estado)}`;
+                option.dataset.estado = cliente.estado;
+                select.appendChild(option);
+            });
+        }
+
+        function getEstadoIcon(estado) {
+            switch(estado) {
+                case 'verde': return '✅';
+                case 'amarillo': return '⚠️';
+                case 'rojo': return '🔴';
+                default: return '';
+            }
+        }
+
+        function actualizarEstadoCliente() {
+            const clienteId = document.getElementById('cliente-select').value;
+            const statusDiv = document.getElementById('cliente-status');
+            const creditoWarning = document.getElementById('credito-warning');
+            
+            if (!clienteId) {
+                statusDiv.style.display = 'none';
+                if (metodoPago === 'credito') {
+                    creditoWarning.style.display = 'block';
+                }
+                return;
+            }
+
+            const cliente = clientes.find(c => c.id == clienteId);
+            if (!cliente) return;
+
+            creditoWarning.style.display = 'none';
+            statusDiv.style.display = 'flex';
+            
+            let statusClass = '';
+            let statusText = '';
+            let statusIcon = '';
+
+            switch(cliente.estado) {
+                case 'verde':
+                    statusClass = 'status-verde';
+                    statusText = `Al día - Límite: ${cliente.limiteCredito} | Deuda: ${cliente.deudaActual}`;
+                    statusIcon = 'fa-check-circle';
+                    break;
+                case 'amarillo':
+                    statusClass = 'status-amarillo';
+                    statusText = `Mora leve - Límite: ${cliente.limiteCredito} | Deuda: ${cliente.deudaActual}`;
+                    statusIcon = 'fa-exclamation-triangle';
+                    break;
+                case 'rojo':
+                    statusClass = 'status-rojo';
+                    statusText = `Mora crítica - Límite: ${cliente.limiteCredito} | Deuda: ${cliente.deudaActual}`;
+                    statusIcon = 'fa-times-circle';
+                    break;
+            }
+
+            statusDiv.className = `cliente-status ${statusClass}`;
+            statusDiv.innerHTML = `<i class="fas ${statusIcon}"></i> ${statusText}`;
+        }
+
+        function abrirModalCliente() {
+            document.getElementById('cliente-modal').classList.add('show');
+            document.getElementById('cliente-nombre').focus();
+        }
+
+        function cerrarModalCliente() {
+            document.getElementById('cliente-modal').classList.remove('show');
+            document.getElementById('cliente-form').reset();
+            document.getElementById('cliente-limite').value = config.limiteCreditoDefault;
+        }
+
+        function guardarCliente(e) {
+            e.preventDefault();
+            
+            const nuevoCliente = {
+                id: Date.now(),
+                nombre: document.getElementById('cliente-nombre').value.trim(),
+                telefono: document.getElementById('cliente-telefono').value.trim(),
+                email: document.getElementById('cliente-email').value.trim(),
+                dni: document.getElementById('cliente-dni').value.trim(),
+                direccion: document.getElementById('cliente-direccion').value.trim(),
+                limiteCredito: parseFloat(document.getElementById('cliente-limite').value) || config.limiteCreditoDefault,
+                deudaActual: 0,
+                ultimaCompra: null,
+                estado: 'verde'
+            };
+
+            if (!nuevoCliente.nombre) {
+                mostrarError('El nombre es obligatorio');
+                return;
+            }
+
+            clientes.push(nuevoCliente);
+            cargarClientes();
+            
+            // Seleccionar el nuevo cliente
+            document.getElementById('cliente-select').value = nuevoCliente.id;
+            actualizarEstadoCliente();
+            
+            cerrarModalCliente();
+            mostrarNotificacion(`Cliente ${nuevoCliente.nombre} agregado correctamente`, 'success');
+        }
+
+        // ========== GESTIÓN DE PRODUCTOS ==========
+        function buscarProductos() {
+            const query = document.getElementById('search-productos').value.toLowerCase();
+            const categoria = document.getElementById('filter-categoria').value;
+            
+            productosFiltrados = productos.filter(producto => {
+                const matchQuery = producto.nombre.toLowerCase().includes(query) || 
+                                 producto.id.toString().includes(query);
+                const matchCategoria = categoria === 'Todas' || producto.categoria === categoria;
+                
+                return matchQuery && matchCategoria;
+            });
+            
+            renderizarProductos();
+        }
+
+        function renderizarProductos() {
+            const container = document.getElementById('productos-container');
+            
+            if (productosFiltrados.length === 0) {
+                container.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: var(--text-secondary);">
+                        <i class="fas fa-search" style="font-size: 3rem; opacity: 0.5; margin-bottom: 1rem;"></i>
+                        <p>No se encontraron productos</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = productosFiltrados.map(producto => `
+                <div class="producto-card" onclick="agregarAlCarrito(${producto.id})">
+                    <span class="producto-emoji">${producto.emoji}</span>
+                    <div class="producto-nombre">${producto.nombre}</div>
+                    <div class="producto-info">
+                        <span class="producto-precio">${producto.precio.toFixed(2)}</span>
+                        <span class="producto-stock">Stock: ${producto.stock}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ========== GESTIÓN DEL CARRITO ==========
+        function agregarAlCarrito(productoId) {
+            const producto = productos.find(p => p.id === productoId);
+            if (!producto) return;
+            
+            // Verificar stock
+            const itemExistente = carrito.find(item => item.id === productoId);
+            const cantidadActual = itemExistente ? itemExistente.cantidad : 0;
+            
+            if (cantidadActual >= producto.stock) {
+                mostrarError('Stock insuficiente');
+                return;
+            }
+            
+            if (itemExistente) {
+                itemExistente.cantidad++;
+            } else {
+                carrito.push({
+                    id: producto.id,
+                    nombre: producto.nombre,
+                    precio: producto.precio,
+                    cantidad: 1,
+                    stock: producto.stock
+                });
+            }
+            
+            actualizarCarrito();
+            mostrarNotificacion(`${producto.nombre} agregado al carrito`, 'success');
+        }
+
+        function actualizarCantidad(productoId, nuevaCantidad) {
+            if (nuevaCantidad <= 0) {
+                eliminarDelCarrito(productoId);
+                return;
+            }
+            
+            const item = carrito.find(item => item.id === productoId);
+            if (item && nuevaCantidad <= item.stock) {
+                item.cantidad = nuevaCantidad;
+                actualizarCarrito();
+            } else if (item) {
+                mostrarError('Stock insuficiente');
+            }
+        }
+
+        function eliminarDelCarrito(productoId) {
+            const producto = carrito.find(item => item.id === productoId);
+            carrito = carrito.filter(item => item.id !== productoId);
+            actualizarCarrito();
+            
+            if (produto) {
+                mostrarNotificacion(`${producto.nombre} eliminado del carrito`, 'info');
+            }
+        }
+
+        function limpiarCarrito() {
+            carrito = [];
+            actualizarCarrito();
+            mostrarNotificacion('Carrito limpiado', 'info');
+        }
+
+        function actualizarCarrito() {
+            const container = document.getElementById('carrito-container');
+            const countElement = document.getElementById('carrito-count');
+            const totalElement = document.getElementById('total-carrito');
+            const itemsCarritoElement = document.getElementById('items-carrito');
+            const procesarBtn = document.getElementById('procesar-venta');
+            
+            // Actualizar contadores
+            const totalItems = carrito.reduce((sum, item) => sum + item.cantidad, 0);
+            const total = carrito.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
+            
+            countElement.textContent = totalItems;
+            itemsCarritoElement.textContent = totalItems;
+            totalElement.textContent = `${total.toFixed(2)}`;
+            
+            // Validar si se puede procesar la venta
+            let puedeProceser = carrito.length > 0 && !ventaProcesando;
+            
+            // Si es crédito y requiere cliente
+            if (metodoPago === 'credito' && config.requiereCliente) {
+                const clienteId = document.getElementById('cliente-select').value;
+                if (!clienteId) {
+                    puedeProceser = false;
+                }
+            }
+            
+            procesarBtn.disabled = !puedeProceser;
+            
+            if (carrito.length === 0) {
+                container.innerHTML = `
+                    <div class="carrito-vacio">
+                        <i class="fas fa-shopping-cart"></i>
+                        <p>Carrito vacío</p>
+                        <small>Selecciona productos para comenzar</small>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = carrito.map(item => `
+                    <div class="carrito-item slide-in">
+                        <div class="item-header">
+                            <div class="item-nombre">${item.nombre}</div>
+                            <div class="item-remove" onclick="eliminarDelCarrito(${item.id})">
+                                <i class="fas fa-times"></i>
+                            </div>
+                        </div>
+                        <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem;">
+                            ${item.precio.toFixed(2)} c/u
+                        </div>
+                        <div class="item-controls">
+                            <div class="quantity-controls">
+                                <button class="qty-btn" onclick="actualizarCantidad(${item.id}, ${item.cantidad - 1})">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <input type="number" class="qty-input" value="${item.cantidad}" 
+                                       onchange="actualizarCantidad(${item.id}, parseInt(this.value))" min="1" max="${item.stock}">
+                                <button class="qty-btn" onclick="actualizarCantidad(${item.id}, ${item.cantidad + 1})">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                            <div class="item-subtotal">${(item.precio * item.cantidad).toFixed(2)}</div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            calcularCambio();
+            validarVentaCredito();
+        }
+
+        // ========== GESTIÓN DE PAGO ==========
+        function cambiarMetodoPago(metodo) {
+            metodoPago = metodo;
+            
+            document.querySelectorAll('.pago-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.metodo === metodo);
+            });
+            
+            const efectivoSection = document.getElementById('efectivo-section');
+            efectivoSection.style.display = metodo === 'efectivo' ? 'block' : 'none';
+            
+            validarVentaCredito();
+            calcularCambio();
+        }
+
+        function validarVentaCredito() {
+            const creditoWarning = document.getElementById('credito-warning');
+            const clienteId = document.getElementById('cliente-select').value;
+            
+            if (metodoPago === 'credito' && config.requiereCliente && !clienteId) {
+                creditoWarning.style.display = 'block';
+            } else {
+                creditoWarning.style.display = 'none';
+            }
+            
+            // Actualizar botón procesar
+            const procesarBtn = document.getElementById('procesar-venta');
+            let puedeProceser = carrito.length > 0 && !ventaProcesando;
+            
+            if (metodoPago === 'credito' && config.requiereCliente && !clienteId) {
+                puedeProceser = false;
+            }
+            
+            procesarBtn.disabled = !puedeProceser;
+        }
+
+        function calcularCambio() {
+            if (metodoPago !== 'efectivo') return;
+            
+            const total = carrito.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
+            const recibido = parseFloat(document.getElementById('dinero-recibido').value) || 0;
+            const cambio = recibido - total;
+            
+            const cambioInfo = document.getElementById('cambio-info');
+            
+            if (recibido > 0) {
+                cambioInfo.style.display = 'block';
+                cambioInfo.textContent = `Cambio: ${cambio.toFixed(2)}`;
+                cambioInfo.className = `cambio-info ${cambio >= 0 ? 'cambio-positivo' : 'cambio-negativo'}`;
+            } else {
+                cambioInfo.style.display = 'none';
+            }
+        }
+
+        // ========== PROCESAR VENTA ==========
+        async function procesarVenta() {
+            if (carrito.length === 0 || ventaProcesando) return;
+            
+            const total = carrito.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
+            const dineroRecibido = parseFloat(document.getElementById('dinero-recibido').value) || 0;
+            const clienteId = document.getElementById('cliente-select').value || null;
+            
+            // Validaciones según método de pago
+            if (metodoPago === 'efectivo' && dineroRecibido < total) {
+                mostrarError('Dinero insuficiente');
+                return;
+            }
+            
+            if (metodoPago === 'credito') {
+                if (config.requiereCliente && !clienteId) {
+                    mostrarError('Debe seleccionar un cliente para venta a crédito');
+                    return;
+                }
+                
+                // Validar límite de crédito
+                if (clienteId) {
+                    const cliente = clientes.find(c => c.id == clienteId);
+                    if (cliente && (cliente.deudaActual + total) > cliente.limiteCredito) {
+                        mostrarError(`Límite de crédito excedido. Disponible: ${(cliente.limiteCredito - cliente.deudaActual).toFixed(2)}`);
+                        return;
+                    }
+                }
+            }
+            
+            ventaProcesando = true;
+            const procesarBtn = document.getElementById('procesar-venta');
+            procesarBtn.classList.add('loading');
+            procesarBtn.disabled = true;
+            
+            try {
+                // Simular procesamiento de venta
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                // Simular resultado exitoso
+                const resultado = {
+                    success: true,
+                    venta_id: Math.floor(Math.random() * 10000) + 1,
+                    total: total,
+                    cambio: metodoPago === 'efectivo' ? Math.max(0, dineroRecibido - total) : 0,
+                    metodo: metodoPago,
+                    cliente_id: clienteId
+                };
+                
+                // Actualizar stock
+                carrito.forEach(item => {
+                    const producto = productos.find(p => p.id === item.id);
+                    if (producto) {
+                        producto.stock -= item.cantidad;
+                    }
+                });
+                
+                // Si es venta a crédito, actualizar deuda del cliente
+                if (metodoPago === 'credito' && clienteId) {
+                    const cliente = clientes.find(c => c.id == clienteId);
+                    if (cliente) {
+                        cliente.deudaActual += total;
+                        cliente.ultimaCompra = new Date();
+                        actualizarEstadoClientePorFecha(cliente);
+                    }
+                }
+                
+                mostrarModalExito(resultado);
+                limpiarCarrito();
+                document.getElementById('dinero-recibido').value = '';
+                document.getElementById('cliente-select').value = '';
+                actualizarEstadoCliente();
+                
+                // Actualizar estadísticas
+                actualizarEstadisticas();
+                cargarClientes(); // Recargar para mostrar estados actualizados
+                renderizarProductos(); // Actualizar stock en UI
+                
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarError('Error al procesar la venta');
+            } finally {
+                ventaProcesando = false;
+                procesarBtn.classList.remove('loading');
+                procesarBtn.disabled = carrito.length === 0;
+            }
+        }
+
+        // ========== GESTIÓN DE ESTADOS DE CLIENTES ==========
+        function actualizarEstadoClientePorFecha(cliente) {
+            if (!cliente.ultimaCompra || cliente.deudaActual === 0) {
+                cliente.estado = 'verde';
+                return;
+            }
+            
+            const diasTranscurridos = Math.floor((new Date() - cliente.ultimaCompra) / (1000 * 60 * 60 * 24));
+            
+            if (diasTranscurridos <= config.diasAmarillo) {
+                cliente.estado = 'verde';
+            } else if (diasTranscurridos <= config.diasRojo) {
+                cliente.estado = 'amarillo';
+            } else {
+                cliente.estado = 'rojo';
+            }
+        }
+
+        function actualizarTodosLosEstadosClientes() {
+            clientes.forEach(cliente => {
+                actualizarEstadoClientePorFecha(cliente);
+            });
+        }
+
+        function actualizarEstadisticas() {
+            // Calcular créditos pendientes
+            const creditosPendientes = clientes.reduce((sum, cliente) => sum + cliente.deudaActual, 0);
+            document.getElementById('creditos-pendientes').textContent = `${creditosPendientes.toFixed(2)}`;
+            
+            // Simular otras estadísticas (en un sistema real vendrían de la base de datos)
+            const ventasHoy = parseInt(document.getElementById('ventas-hoy').textContent);
+            const totalHoy = parseFloat(document.getElementById('total-hoy').textContent.replace(', '').replace(',', ''));
+        }
+
+        // ========== CONFIGURACIÓN ==========
+        function abrirModalConfig() {
+            document.getElementById('config-modal').classList.add('show');
+            
+            // Cargar valores actuales
+            document.getElementById('config-dias-amarillo').value = config.diasAmarillo;
+            document.getElementById('config-dias-rojo').value = config.diasRojo;
+            document.getElementById('config-limite-default').value = config.limiteCreditoDefault;
+            document.getElementById('config-requiere-cliente').checked = config.requiereCliente;
+        }
+
+        function cerrarModalConfig() {
+            document.getElementById('config-modal').classList.remove('show');
+        }
+
+        function guardarConfiguracion() {
+            const diasAmarillo = parseInt(document.getElementById('config-dias-amarillo').value);
+            const diasRojo = parseInt(document.getElementById('config-dias-rojo').value);
+            
+            if (diasAmarillo >= diasRojo) {
+                mostrarError('Los días para mora crítica deben ser mayores que los días hasta mora');
+                return;
+            }
+            
+            config.diasAmarillo = diasAmarillo;
+            config.diasRojo = diasRojo;
+            config.limiteCreditoDefault = parseFloat(document.getElementById('config-limite-default').value);
+            config.requiereCliente = document.getElementById('config-requiere-cliente').checked;
+            
+            // Actualizar estados de clientes con nueva configuración
+            actualizarTodosLosEstadosClientes();
+            cargarClientes();
+            
+            cerrarModalConfig();
+            mostrarNotificacion('Configuración guardada correctamente', 'success');
+        }
+
+        // ========== UI Y EFECTOS ==========
+        function mostrarModalExito(resultado) {
+            document.getElementById('modal-ticket').textContent = resultado.venta_id;
+            document.getElementById('modal-total').textContent = `${resultado.total.toFixed(2)}`;
+            
+            // Mostrar método de pago
+            const metodosTexto = {
+                'efectivo': 'Efectivo',
+                'tarjeta': 'Tarjeta',
+                'mercadopago': 'MercadoPago',
+                'qr': 'Código QR',
+                'transferencia': 'Transferencia',
+                'credito': 'A Crédito'
+            };
+            document.getElementById('modal-metodo-valor').textContent = metodosTexto[resultado.metodo];
+            
+            // Mostrar cliente si aplica
+            const clienteElement = document.getElementById('modal-cliente');
+            if (resultado.cliente_id) {
+                const cliente = clientes.find(c => c.id == resultado.cliente_id);
+                if (cliente) {
+                    document.getElementById('modal-cliente-valor').textContent = cliente.nombre;
+                    clienteElement.style.display = 'block';
+                }
+            } else {
+                clienteElement.style.display = 'none';
+            }
+            
+            // Mostrar cambio si es efectivo
+            const cambioElement = document.getElementById('modal-cambio');
+            if (resultado.metodo === 'efectivo' && resultado.cambio > 0) {
+                document.getElementById('modal-cambio-valor').textContent = `${resultado.cambio.toFixed(2)}`;
+                cambioElement.style.display = 'block';
+            } else {
+                cambioElement.style.display = 'none';
+            }
+            
+            // Mostrar indicador de crédito
+            const creditoElement = document.getElementById('modal-credito');
+            creditoElement.style.display = resultado.metodo === 'credito' ? 'block' : 'none';
+            
+            const modal = document.getElementById('success-modal');
+            modal.classList.add('show');
+            
+            // Auto-cerrar después de 5 segundos
+            setTimeout(cerrarModal, 5000);
+        }
+
+        function cerrarModal() {
+            document.getElementById('success-modal').classList.remove('show');
+        }
+
+        function mostrarNotificacion(mensaje, tipo = 'info') {
+            // Crear elemento de notificación
+            const notificacion = document.createElement('div');
+            notificacion.className = `notificacion notificacion-${tipo}`;
+            notificacion.innerHTML = `
+                <i class="fas fa-${tipo === 'success' ? 'check' : tipo === 'error' ? 'times' : 'info'}-circle"></i>
+                ${mensaje}
+            `;
+            
+            // Estilos de la notificación
+            notificacion.style.cssText = `
+                position: fixed;
+                top: 2rem;
+                right: 2rem;
+                background: var(--bg-secondary);
+                color: var(--text-primary);
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                border-left: 4px solid var(--${tipo === 'success' ? 'accent' : tipo === 'error' ? 'danger' : 'info'});
+                box-shadow: var(--card-shadow);
+                z-index: 10000;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                transform: translateX(400px);
+                transition: transform 0.3s ease;
+                font-size: 0.875rem;
+                max-width: 300px;
+            `;
+            
+            document.body.appendChild(notificacion);
+            
+            // Animar entrada
+            setTimeout(() => {
+                notificacion.style.transform = 'translateX(0)';
+            }, 100);
+            
+            // Remover después de 4 segundos
+            setTimeout(() => {
+                notificacion.style.transform = 'translateX(400px)';
+                setTimeout(() => {
+                    if (document.body.contains(notificacion)) {
+                        document.body.removeChild(notificacion);
+                    }
+                }, 300);
+            }, 4000);
+        }
+
+        function mostrarError(mensaje) {
+            mostrarNotificacion(mensaje, 'error');
+        }
+
+        // ========== UTILIDADES ==========
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // ========== THEME TOGGLE ==========
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            
+            // Actualizar icono del botón
+            const themeIcon = document.querySelector('.theme-toggle i');
+            themeIcon.className = `fas fa-${newTheme === 'dark' ? 'sun' : 'moon'}`;
+            
+            mostrarNotificacion(`Tema ${newTheme === 'dark' ? 'oscuro' : 'claro'} activado`, 'success');
+        }
+
+        // ========== ATAJOS DE TECLADO ==========
+        document.addEventListener('keydown', function(e) {
+            // F1 - Focus en búsqueda
+            if (e.key === 'F1') {
+                e.preventDefault();
+                document.getElementById('search-productos').focus();
+            }
+            
+            // F2 - Procesar venta
+            if (e.key === 'F2' && !document.getElementById('procesar-venta').disabled) {
+                e.preventDefault();
+                procesarVenta();
+            }
+            
+            // F3 - Limpiar carrito
+            if (e.key === 'F3' && carrito.length > 0) {
+                e.preventDefault();
+                if (confirm('¿Limpiar carrito?')) {
+                    limpiarCarrito();
+                }
+            }
+            
+            // F4 - Cambiar método de pago
+            if (e.key === 'F4') {
+                e.preventDefault();
+                const metodos = ['efectivo', 'tarjeta', 'mercadopago', 'qr', 'transferencia', 'credito'];
+                const currentIndex = metodos.indexOf(metodoPago);
+                const nextIndex = (currentIndex + 1) % metodos.length;
+                cambiarMetodoPago(metodos[nextIndex]);
+            }
+            
+            // F5 - Nuevo cliente
+            if (e.key === 'F5') {
+                e.preventDefault();
+                abrirModalCliente();
+            }
+            
+            // F6 - Configuración
+            if (e.key === 'F6') {
+                e.preventDefault();
+                abrirModalConfig();
+            }
+            
+            // Alt + T - Toggle tema
+            if (e.altKey && e.key === 't') {
+                e.preventDefault();
+                toggleTheme();
+            }
+        });
+
+        // ========== INICIALIZACIÓN FINAL ==========
+        // Actualizar estados de clientes al cargar
+        actualizarTodosLosEstadosClientes();
+
+        // Mostrar mensaje de bienvenida
+        setTimeout(() => {
+            mostrarNotificacion('¡POS Premium con Créditos cargado! Usa F1-F6 para atajos rápidos.', 'success');
+        }, 1000);
+
+        console.log('🚀 SysTec POS Premium con Créditos cargado correctamente');
+        console.log('⌨️ Atajos de teclado:');
+        console.log('   F1: Focus en búsqueda');
+        console.log('   F2: Procesar venta');
+        console.log('   F3: Limpiar carrito');
+        console.log('   F4: Cambiar método de pago');
+        console.log('   F5: Nuevo cliente');
+        console.log('   F6: Configuración');
+        console.log('   Alt + T: Cambiar tema');
+        console.log('');
+        console.log('💳 Métodos de pago disponibles:');
+        console.log('   • Efectivo');
+        console.log('   • Tarjeta');
+        console.log('   • MercadoPago');
+        console.log('   • Código QR');
+        console.log('   • Transferencia');
+        console.log('   • A Crédito');
+        console.log('');
+        console.log('👥 Gestión de clientes:');
+        console.log('   🟢 Verde: Cliente al día');
+        console.log('   🟡 Amarillo: Mora leve (hasta ' + config.diasAmarillo + ' días)');
+        console.log('   🔴 Rojo: Mora crítica (más de ' + config.diasRojo + ' días)');
+    </script>
+</body>
+</html>

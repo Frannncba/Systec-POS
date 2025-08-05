@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-2xl font-bold mb-4">Gestión de Licencia</h2>
+
+    <div class="bg-white shadow-md rounded p-4">
+        <p><strong>Estado:</strong> 
+            {% if estado == 'activa' %}
+                <span class="text-green-600">Licencia definitiva</span>
+            {% elif estado == 'temporal' %}
+                <span class="text-yellow-600">Licencia temporal ({{ dias_restantes }} días restantes)</span>
+            {% elif estado == 'expirada' %}
+                <span class="text-red-600">Licencia expirada</span>
+            {% elif estado == 'invalida' %}
+                <span class="text-red-600">Licencia inválida para esta PC</span>
+            {% else %}
+                <span class="text-gray-600">Sin licencia</span>
+            {% endif %}
+        </p>
+
+        <p class="mt-2"><strong>UUID:</strong> {{ licencia.uuid or 'No registrado' }}</p>
+
+        <form method="POST" class="mt-4 space-y-4">
+            <div>
+                <label for="tipo" class="font-medium">Tipo de licencia:</label>
+                <select name="tipo" id="tipo" class="border rounded p-1">
+                    <option value="temporal">Temporal</option>
+                    <option value="definitiva" {% if licencia.tipo == 'definitiva' %}selected{% endif %}>Definitiva</option>
+                </select>
+            </div>
+
+            <div id="dias_field">
+                <label for="dias" class="font-medium">Días de prueba:</label>
+                <input type="number" name="dias" id="dias" min="1" max="365" value="7" class="border rounded p-1 w-20">
+            </div>
+
+            <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">Actualizar licencia</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    const tipoSelect = document.getElementById('tipo');
+    const diasField = document.getElementById('dias_field');
+    tipoSelect.addEventListener('change', () => {
+        diasField.style.display = tipoSelect.value === 'temporal' ? 'block' : 'none';
+    });
+    // Inicializa visibilidad
+    diasField.style.display = tipoSelect.value === 'temporal' ? 'block' : 'none';
+</script>
+{% endblock %}

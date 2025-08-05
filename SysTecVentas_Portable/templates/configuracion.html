@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuración - {{ empresa_nombre }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            {% if modo_oscuro %}
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --accent: #10b981;
+            --accent-hover: #059669;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --border: #475569;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            {% else %}
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-tertiary: #e2e8f0;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --accent: #10b981;
+            --accent-hover: #059669;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --border: #e2e8f0;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            {% endif %}
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo-section {
+            padding: 2rem 1.5rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo-section img {
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            object-fit: cover;
+            margin-bottom: 1rem;
+            box-shadow: var(--card-shadow);
+        }
+
+        .logo-section h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .nav-menu {
+            flex: 1;
+            padding: 1rem 0;
+        }
+
+        .nav-item {
+            display: block;
+            padding: 1rem 1.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item:hover {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent);
+        }
+
+        .nav-item.active {
+            background: var(--accent);
+            color: white;
+            border-radius: 8px;
+            margin: 0 1rem;
+        }
+
+        .nav-item i {
+            width: 20px;
+            margin-right: 0.75rem;
+        }
+
+        .nav-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .logout-btn {
+            color: var(--danger) !important;
+        }
+
+        .logout-btn:hover {
+            background: rgba(239, 68, 68, 0.1) !important;
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .welcome-text h2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .welcome-text p {
+            color: var(--text-secondary);
+        }
+
+        .content {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* TABS */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2rem;
+        }
+
+        .tab {
+            padding: 1rem 1.5rem;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .tab:hover {
+            color: var(--accent);
+        }
+
+        /* TAB CONTENT */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* FORM STYLES */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .form-section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+        }
+
+        .form-section h3 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        .form-control[type="file"] {
+            padding: 0.5rem;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .checkbox {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+        }
+
+        /* ALERTS */
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent);
+            color: var(--accent);
+        }
+
+        .alert-danger {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+        }
+
+        .alert-warning {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid var(--warning);
+            color: var(--warning);
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+            }
+            
+            .sidebar .nav-item span {
+                display: none;
+            }
+            
+            .logo-section h1 {
+                display: none;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tabs {
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="layout">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="logo-section">
+                {% if empresa_logo %}
+                <img src="{{ url_for('static', filename=empresa_logo) }}" alt="Logo {{ empresa_nombre }}">
+                {% else %}
+                <div style="width: 80px; height: 80px; background: var(--accent); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; color: white; font-weight: bold; font-size: 1.5rem;">
+                    ST
+                </div>
+                {% endif %}
+                <h1>{{ empresa_nombre }}</h1>
+            </div>
+            
+            <nav class="nav-menu">
+                <a href="{{ url_for('dashboard') }}" class="nav-item">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </a>
+                
+                <a href="{{ url_for('productos') }}" class="nav-item">
+                    <i class="fas fa-box"></i>
+                    <span>Productos</span>
+                </a>
+                
+                <a href="{{ url_for('clientes') }}" class="nav-item">
+                    <i class="fas fa-users"></i>
+                    <span>Clientes</span>
+                </a>
+                
+                <a href="{{ url_for('ventas') }}" class="nav-item">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Ventas</span>
+                </a>
+                
+                <a href="{{ url_for('nueva_venta') }}" class="nav-item">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Nueva Venta</span>
+                </a>
+                
+                <a href="{{ url_for('configuracion') }}" class="nav-item active">
+                    <i class="fas fa-cog"></i>
+                    <span>Configuración</span>
+                </a>
+            </nav>
+            
+            <div class="nav-footer">
+                <a href="{{ url_for('logout') }}" class="nav-item logout-btn" onclick="return confirm('¿Cerrar sesión?')">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Cerrar Sesión</span>
+                </a>
+                
+                <div style="margin-top: 1rem; text-align: center; font-size: 0.75rem; color: var(--text-secondary);">
+                    <div>Usuario: {{ usuario_actual }}</div>
+                    <div>© SysTec Software</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            <header class="header">
+                <div class="welcome-text">
+                    <h2>Configuración del Sistema</h2>
+                    <p>Personaliza tu experiencia de SysTec Ventas</p>
+                </div>
+            </header>
+            
+            <div class="content">
+                <!-- ALERTS -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ 'danger' if category == 'error' else category }}">
+                                <i class="fas fa-{{ 'check-circle' if category == 'success' else 'exclamation-triangle' if category == 'warning' else 'times-circle' }}"></i>
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <!-- TABS -->
+                <div class="tabs">
+                    <button class="tab active" onclick="showTab('empresa')">
+                        <i class="fas fa-building"></i> Empresa
+                    </button>
+                    <button class="tab" onclick="showTab('ventas')">
+                        <i class="fas fa-shopping-cart"></i> Ventas
+                    </button>
+                    <button class="tab" onclick="showTab('inventario')">
+                        <i class="fas fa-boxes"></i> Inventario
+                    </button>
+                    <button class="tab" onclick="showTab('sistema')">
+                        <i class="fas fa-cogs"></i> Sistema
+                    </button>
+                    <button class="tab" onclick="showTab('backup')">
+                        <i class="fas fa-database"></i> Backup
+                    </button>
+                </div>
+
+                <form method="POST" enctype="multipart/form-data">
+                    <!-- TAB: EMPRESA -->
+                    <div id="tab-empresa" class="tab-content active">
+                        <div class="form-grid">
+                            <div class="form-section">
+                                <h3><i class="fas fa-building"></i> Información de la Empresa</h3>
+                                
+                                <div class="form-group">
+                                    <label for="nombre_empresa">Nombre de la Empresa</label>
+                                    <input type="text" id="nombre_empresa" name="nombre_empresa" class="form-control" 
+                                           value="{{ config.empresa_nombre }}" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="empresa_direccion">Dirección</label>
+                                    <input type="text" id="empresa_direccion" name="empresa_direccion" class="form-control" 
+                                           value="{{ config.empresa_direccion or '' }}">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="empresa_telefono">Teléfono</label>
+                                    <input type="tel" id="empresa_telefono" name="empresa_telefono" class="form-control" 
+                                           value="{{ config.empresa_telefono or '' }}">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="empresa_email">Email</label>
+                                    <input type="email" id="empresa_email" name="empresa_email" class="form-control" 
+                                           value="{{ config.empresa_email or '' }}">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="empresa_cuit">CUIT/CUIL</label>
+                                    <input type="text" id="empresa_cuit" name="empresa_cuit" class="form-control" 
+                                           value="{{ config.empresa_cuit or '' }}" placeholder="20-12345678-9">
+                                </div>
+                            </div>
+                            
+                            <div class="form-section">
+                                <h3><i class="fas fa-image"></i> Logo y Apariencia</h3>
+                                
+                                <div class="form-group">
+                                    <label for="logo">Logo de la Empresa</label>
+                                    <input type="file" id="logo" name="logo" class="form-control" accept="image/*">
+                                    <small style="color: var(--text-secondary); font-size: 0.75rem;">
+                                        Formatos soportados: PNG, JPG, GIF. Tamaño recomendado: 200x200px
+                                    </small>
+                                </div>
+                                
+                                {% if empresa_logo %}
+                                <div style="margin-top: 1rem;">
+                                    <p style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Logo actual:</p>
+                                    <img src="{{ url_for('static', filename=empresa_logo) }}" alt="Logo actual" 
+                                         style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border);">
+                                </div>
+                                {% endif %}
+                                
+                                <div class="form-group">
+                                    <div class="checkbox-group">
+                                        <input type="checkbox" id="modo_oscuro" name="modo_oscuro" class="checkbox" 
+                                               {{ 'checked' if config.modo_oscuro else '' }}>
+                                        <label for="modo_oscuro">Modo Oscuro</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB: VENTAS -->
+                    <div id="tab-ventas" class="tab-content">
+                        <div class="form-grid">
+                            <div class="form-section">
+                                <h3><i class="fas fa-dollar-sign"></i> Configuración de Ventas</h3>
+                                
+                                <div class="form-group">
+                                    <label for="moneda_simbolo">Símbolo de Moneda</label>
+                                    <input type="text" id="moneda_simbolo" name="moneda_simbolo" class="form-control" 
+                                           value="{{ config.moneda_simbolo or ' }}" maxlength="5">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <div class="checkbox-group">
+                                        <input type="checkbox" id="iva_incluido" name="iva_incluido" class="checkbox" 
+                                               {{ 'checked' if config.iva_incluido else '' }}>
+                                        <label for="iva_incluido">Precios incluyen IVA</label>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <div class="checkbox-group">
+                                        <input type="checkbox" id="mostrar_precios_costo" name="mostrar_precios_costo" class="checkbox" 
+                                               {{ 'checked' if config.mostrar_precios_costo else '' }}>
+                                        <label for="mostrar_precios_costo">Mostrar precios de costo</label>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <div class="checkbox-group">
+                                        <input type="checkbox" id="permitir_ventas_sin_stock" name="permitir_ventas_sin_stock" class="checkbox" 
+                                               {{ 'checked' if config.permitir_ventas_sin_stock else '' }}>
+                                        <label for="permitir_ventas_sin_stock">Permitir ventas sin stock</label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-section">
+                                <h3><i class="fas fa-print"></i> Impresión y Formatos</h3>
+                                
+                                <div class="form-group">
+                                    <label for="formato_fecha">Formato de Fecha</label>
+                                    <select id="formato_fecha" name="formato_fecha" class="form-control">
+                                        <option value="DD/MM/YYYY" {{ 'selected' if config.formato_fecha == 'DD/MM/YYYY' else '' }}>DD/MM/YYYY</option>
+                                        <option value="MM/DD/YYYY" {{ 'selected' if config.formato_fecha == 'MM/DD/YYYY' else '' }}>MM/DD/YYYY</option>
+                                        <option value="YYYY-MM-DD" {{ 'selected' if config.formato_fecha == 'YYYY-MM-DD' else '' }}>YYYY-MM-DD</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <div class="checkbox-group">
+                                        <input type="checkbox" id="imprimir_ticket_auto" name="imprimir_ticket_auto" class="checkbox" 
+                                               {{ 'checked' if config.imprimir_ticket_auto else '' }}>
+                                        <label for="imprimir_ticket_auto">Imprimir ticket automáticamente</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB: INVENTARIO -->
+                    <div id="tab-inventario" class="tab-content">
+                        <div class="form-grid">
+                            <div class="form-section">
+                                <h3><i class="fas fa-boxes"></i> Gestión de Inventario</h3>
+                                
+                                <div class="form-group">
+                                    <label for="umbral_stock_minimo">Stock Mínimo (Umbral de Alerta)</label>
+                                    <input type="number" id="umbral_stock_minimo" name="umbral_stock_minimo" class="form-control" 
+                                           value="{{ config.umbral_stock_minimo or 5 }}" min="0" max="1000">
+                                    <small style="color: var(--text-secondary); font-size: 0.75rem;">
+                                        Productos con stock menor a este valor aparecerán como "Stock Bajo"
+                                    </small>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <div class="checkbox-group">
+                                        <input type="checkbox" id="notificar_stock_bajo" name="notificar_stock_bajo" class="checkbox" 
+                                               {{ 'checked' if config.notificar_stock_bajo else '' }}>
+                                        <label for="notificar_stock_bajo">Notificar cuando hay stock bajo</label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-section">
+                                <h3><i class="fas fa-chart-bar"></i> Reportes de Inventario</h3>
+                                
+                                <div style="padding: 1rem; background: var(--bg-tertiary); border-radius: 8px; margin-bottom: 1rem;">
+                                    <h4 style="margin-bottom: 0.5rem; font-size: 1rem;">Acciones Rápidas</h4>
+                                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                        <a href="{{ url_for('productos') }}" class="btn btn-secondary">
+                                            <i class="fas fa-eye"></i> Ver Inventario
+                                        </a>
+                                        <button type="button" class="btn btn-secondary" onclick="exportarInventario()">
+                                            <i class="fas fa-download"></i> Exportar CSV
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB: SISTEMA -->
+                    <div id="tab-sistema" class="tab-content">
+                        <div class="form-grid">
+                            <div class="form-section">
+                                <h3><i class="fas fa-globe"></i> Configuración Regional</h3>
+                                
+                                <div class="form-group">
+                                    <label for="idioma">Idioma</label>
+                                    <select id="idioma" name="idioma" class="form-control">
+                                        <option value="es" {{ 'selected' if config.idioma == 'es' else '' }}>Español</option>
+                                        <option value="en" {{ 'selected' if config.idioma == 'en' else '' }}>English</option>
+                                        <option value="pt" {{ 'selected' if config.idioma == 'pt' else '' }}>Português</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="zona_horaria">Zona Horaria</label>
+                                    <select id="zona_horaria" name="zona_horaria" class="form-control">
+                                        <option value="America/Argentina/Buenos_Aires" {{ 'selected' if config.zona_horaria == 'America/Argentina/Buenos_Aires' else '' }}>Buenos Aires (UTC-3)</option>
+                                        <option value="America/Sao_Paulo" {{ 'selected' if config.zona_horaria == 'America/Sao_Paulo' else '' }}>São Paulo (UTC-3)</option>
+                                        <option value="America/Santiago" {{ 'selected' if config.zona_horaria == 'America/Santiago' else '' }}>Santiago (UTC-3)</option>
+                                        <option value="America/Mexico_City" {{ 'selected' if config.zona_horaria == 'America/Mexico_City' else '' }}>Ciudad de México (UTC-6)</option>
+                                        <option value="America/New_York" {{ 'selected' if config.zona_horaria == 'America/New_York' else '' }}>Nueva York (UTC-5)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-section">
+                                <h3><i class="fas fa-shield-alt"></i> Seguridad y Mantenimiento</h3>
+                                
+                                <div class="form-group">
+                                    <div class="checkbox-group">
+                                        <input type="checkbox" id="backup_automatico" name="backup_automatico" class="checkbox" 
+                                               {{ 'checked' if config.backup_automatico else '' }}>
+                                        <label for="backup_automatico">Backup automático diario</label>
+                                    </div>
+                                </div>
+                                
+                                <div style="padding: 1rem; background: var(--bg-tertiary); border-radius: 8px; margin-top: 1rem;">
+                                    <h4 style="margin-bottom: 0.5rem; font-size: 1rem;">Información del Sistema</h4>
+                                    <div style="font-size: 0.875rem; color: var(--text-secondary);">
+                                        <p><strong>Versión:</strong> SysTec Ventas v2.0</p>
+                                        <p><strong>Base de Datos:</strong> SQLite</p>
+                                        <p><strong>Usuario Actual:</strong> {{ usuario_actual }} ({{ rol_actual|title }})</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB: BACKUP -->
+                    <div id="tab-backup" class="tab-content">
+                        <div class="form-grid">
+                            <div class="form-section">
+                                <h3><i class="fas fa-database"></i> Respaldo de Datos</h3>
+                                
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    Realiza backups regulares para proteger tu información de ventas.
+                                </div>
+                                
+                                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                                    <button type="button" class="btn btn-primary" onclick="crearBackup()">
+                                        <i class="fas fa-download"></i> Crear Backup Ahora
+                                    </button>
+                                    
+                                    <a href="{{ url_for('exportar_configuracion') }}" class="btn btn-secondary">
+                                        <i class="fas fa-cog"></i> Exportar Configuración
+                                    </a>
+                                </div>
+                                
+                                <div id="backup-status" style="margin-top: 1rem; display: none;"></div>
+                            </div>
+                            
+                            <div class="form-section">
+                                <h3><i class="fas fa-exclamation-triangle"></i> Zona de Peligro</h3>
+                                
+                                <div class="alert alert-danger">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <strong>¡Cuidado!</strong> Estas acciones son irreversibles.
+                                </div>
+                                
+                                {% if rol_actual == 'admin' %}
+                                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                                    <button type="button" class="btn btn-danger" onclick="confirmarRestablecimiento()">
+                                        <i class="fas fa-undo"></i> Restablecer Configuración
+                                    </button>
+                                    
+                                    <small style="color: var(--text-secondary); font-size: 0.75rem;">
+                                        Esto restablecerá toda la configuración a los valores por defecto.
+                                        Los datos de ventas y productos no se verán afectados.
+                                    </small>
+                                </div>
+                                {% else %}
+                                <p style="color: var(--text-secondary); font-style: italic;">
+                                    Solo los administradores pueden acceder a estas opciones.
+                                </p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BOTONES DE ACCIÓN -->
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Guardar Configuración
+                        </button>
+                        
+                        <button type="button" class="btn btn-secondary" onclick="location.reload()">
+                            <i class="fas fa-undo"></i> Cancelar Cambios
+                        </button>
+                        
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Volver al Dashboard
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Función para cambiar entre tabs
+        function showTab(tabName) {
+            // Ocultar todos los contenidos
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => content.classList.remove('active'));
+            
+            // Remover clase active de todos los tabs
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Mostrar el contenido seleccionado
+            document.getElementById('tab-' + tabName).classList.add('active');
+            
+            // Marcar el tab como activo
+            event.target.closest('.tab').classList.add('active');
+        }
+
+        // Función para crear backup
+        async function crearBackup() {
+            const statusDiv = document.getElementById('backup-status');
+            statusDiv.style.display = 'block';
+            statusDiv.innerHTML = '<div class="alert alert-warning"><i class="fas fa-spinner fa-spin"></i> Creando backup...</div>';
+            
+            try {
+                const response = await fetch('/api/backup');
+                const result = await response.json();
+                
+                if (result.success) {
+                    statusDiv.innerHTML = '<div class="alert alert-success"><i class="fas fa-check-circle"></i> ' + result.message + '</div>';
+                } else {
+                    statusDiv.innerHTML = '<div class="alert alert-danger"><i class="fas fa-times-circle"></i> Error: ' + result.message + '</div>';
+                }
+            } catch (error) {
+                statusDiv.innerHTML = '<div class="alert alert-danger"><i class="fas fa-times-circle"></i> Error de conexión: ' + error.message + '</div>';
+            }
+        }
+
+        // Función para exportar inventario
+        function exportarInventario() {
+            // Crear formulario temporal para descargar CSV
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/productos/exportar';
+            document.body.appendChild(form);
+            form.submit();
+            document.body.removeChild(form);
+        }
+
+        // Función para confirmar restablecimiento
+        function confirmarRestablecimiento() {
+            if (confirm('¿Estás seguro de que quieres restablecer toda la configuración?\n\nEsta acción NO se puede deshacer.')) {
+                if (confirm('Última confirmación: ¿Realmente quieres proceder?')) {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '/configuracion/restablecer';
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            }
+        }
+
+        // Aplicar cambios de modo oscuro en tiempo real
+        document.getElementById('modo_oscuro').addEventListener('change', function() {
+            const root = document.documentElement;
+            if (this.checked) {
+                // Modo oscuro
+                root.style.setProperty('--bg-primary', '#0f172a');
+                root.style.setProperty('--bg-secondary', '#1e293b');
+                root.style.setProperty('--bg-tertiary', '#334155');
+                root.style.setProperty('--text-primary', '#f8fafc');
+                root.style.setProperty('--text-secondary', '#cbd5e1');
+                root.style.setProperty('--border', '#475569');
+                root.style.setProperty('--card-shadow', '0 4px 6px -1px rgba(0, 0, 0, 0.3)');
+            } else {
+                // Modo claro
+                root.style.setProperty('--bg-primary', '#ffffff');
+                root.style.setProperty('--bg-secondary', '#f8fafc');
+                root.style.setProperty('--bg-tertiary', '#e2e8f0');
+                root.style.setProperty('--text-primary', '#1e293b');
+                root.style.setProperty('--text-secondary', '#64748b');
+                root.style.setProperty('--border', '#e2e8f0');
+                root.style.setProperty('--card-shadow', '0 4px 6px -1px rgba(0, 0, 0, 0.1)');
+            }
+        });
+
+        // Validar formulario antes del envío
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const nombreEmpresa = document.getElementById('nombre_empresa').value.trim();
+            if (!nombreEmpresa) {
+                e.preventDefault();
+                alert('El nombre de la empresa es obligatorio.');
+                document.getElementById('nombre_empresa').focus();
+                return false;
+            }
+            
+            const umbralStock = parseInt(document.getElementById('umbral_stock_minimo').value);
+            if (umbralStock < 0 || umbralStock > 1000) {
+                e.preventDefault();
+                alert('El umbral de stock debe estar entre 0 y 1000.');
+                document.getElementById('umbral_stock_minimo').focus();
+                return false;
+            }
+        });
+
+        // Auto-guardar cuando se cambia el modo oscuro
+        let autoSaveTimeout;
+        document.querySelectorAll('input, select').forEach(input => {
+            input.addEventListener('change', function() {
+                clearTimeout(autoSaveTimeout);
+                autoSaveTimeout = setTimeout(() => {
+                    // Mostrar indicador de auto-guardado
+                    const indicator = document.createElement('div');
+                    indicator.innerHTML = '<i class="fas fa-save"></i> Guardando...';
+                    indicator.style.cssText = 'position: fixed; top: 20px; right: 20px; background: var(--accent); color: white; padding: 0.5rem 1rem; border-radius: 8px; z-index: 1000; font-size: 0.875rem;';
+                    document.body.appendChild(indicator);
+                    
+                    setTimeout(() => {
+                        indicator.remove();
+                    }, 2000);
+                }, 1000);
+            });
+        });
+    </script>
+</body>
+</html>

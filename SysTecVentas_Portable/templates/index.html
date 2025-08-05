@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - {{ config.nombre_negocio if config else 'SysTec Ventas' }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .card-title { font-size: 1.2rem; }
+        .card-text { font-size: 2rem; font-weight: bold; }
+        .quick-action-btn { height: 100px; display: flex; align-items: center; justify-content: center; }
+    </style>
+</head>
+<body class="bg-light">
+    {% include 'navbar.html' %}
+
+    <div class="container mt-4">
+        <!-- Encabezado -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h1 class="display-4">
+                    👋 Hola, {{ usuario }}
+                </h1>
+                <p class="lead">{{ config.nombre_negocio if config else 'SysTec Ventas' }}</p>
+                <hr>
+            </div>
+        </div>
+
+        <!-- Tarjetas de métricas -->
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-body text-center">
+                        <h5 class="card-title text-primary">VENTAS HOY</h5>
+                        <p class="card-text">{{ ventas.ventas_hoy }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-body text-center">
+                        <h5 class="card-title text-success">TOTAL HOY</h5>
+                        <p class="card-text">${{ "%.2f"|format(ventas.total_hoy) }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Acciones rápidas -->
+        <div class="row mt-4">
+            <div class="col-md-3 mb-3">
+                <a href="/ventas" class="btn btn-primary btn-lg quick-action-btn">
+                    💰 Nueva Venta
+                </a>
+            </div>
+            <div class="col-md-3 mb-3">
+                <a href="/productos" class="btn btn-secondary btn-lg quick-action-btn">
+                    📦 Productos
+                </a>
+            </div>
+            <div class="col-md-3 mb-3">
+                <a href="/clientes" class="btn btn-info btn-lg quick-action-btn">
+                    👥 Clientes
+                </a>
+            </div>
+            {% if session.rol in ['dueño', 'admin'] %}
+            <div class="col-md-3 mb-3">
+                <a href="/configuracion" class="btn btn-warning btn-lg quick-action-btn">
+                    ⚙️ Configuración
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

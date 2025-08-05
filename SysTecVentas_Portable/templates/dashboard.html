@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="{{ 'dark' if modo_oscuro else 'light' }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - {{ empresa_nombre }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        :root[data-theme="dark"] {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --accent: #10b981;
+            --accent-hover: #059669;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --border: #475569;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        }
+
+        :root[data-theme="light"] {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-tertiary: #e2e8f0;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --accent: #10b981;
+            --accent-hover: #059669;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --border: #e2e8f0;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+            position: fixed;
+            height: 100vh;
+            z-index: 1000;
+        }
+
+        .logo-section {
+            padding: 2rem 1.5rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo-section img {
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            object-fit: cover;
+            margin-bottom: 1rem;
+            box-shadow: var(--card-shadow);
+        }
+
+        .logo-placeholder {
+            width: 80px;
+            height: 80px;
+            background: var(--accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: white;
+            font-weight: bold;
+            font-size: 1.5rem;
+            box-shadow: var(--card-shadow);
+        }
+
+        .logo-section h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .nav-menu {
+            flex: 1;
+            padding: 1rem 0;
+            overflow-y: auto;
+        }
+
+        .nav-item {
+            display: block;
+            padding: 0.875rem 1.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+
+        .nav-item:hover {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent);
+        }
+
+        .nav-item.active {
+            background: var(--accent);
+            color: white !important;
+            border-radius: 8px;
+            margin: 0 1rem;
+            font-weight: 500;
+        }
+
+        .nav-item i {
+            width: 20px;
+            margin-right: 0.75rem;
+            text-align: center;
+        }
+
+        .nav-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .logout-btn {
+            color: var(--danger) !important;
+        }
+
+        .logout-btn:hover {
+            background: rgba(239, 68, 68, 0.1) !important;
+        }
+
+        .user-info-sidebar {
+            margin-top: 1rem;
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            overflow-y: auto;
+            background: var(--bg-primary);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .welcome-text h2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+            color: var(--text-primary);
+        }
+
+        .welcome-text p {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-details {
+            text-align: right;
+        }
+
+        .user-details .username {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+        }
+
+        .user-details .role {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: capitalize;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        /* FLASH MESSAGES */
+        .flash-messages {
+            margin-bottom: 2rem;
+        }
+
+        .flash-message {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .flash-message.success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent);
+            color: var(--accent);
+        }
+
+        .flash-message.danger {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+        }
+
+        .flash-message.warning {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid var(--warning);
+            color: var(--warning);
+        }
+
+        .flash-message.info {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid var(--info);
+            color: var(--info);
+        }
+
+        /* KPI CARDS */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .kpi-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.2);
+        }
+
+        .kpi-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .kpi-title {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .kpi-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.125rem;
+        }
+
+        .kpi-icon.success { background: rgba(16, 185, 129, 0.2); color: var(--accent); }
+        .kpi-icon.warning { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+        .kpi-icon.danger { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+        .kpi-icon.info { background: rgba(59, 130, 246, 0.2); color: var(--info); }
+
+        .kpi-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .kpi-change {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        /* QUICK ACTIONS */
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .quick-action {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 1.5rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: all 0.2s ease;
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+
+        .quick-action:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--card-shadow);
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+
+        .quick-action.success { border-left: 4px solid var(--accent); }
+        .quick-action.info { border-left: 4px solid var(--info); }
+        .quick-action.warning { border-left: 4px solid var(--warning); }
+        .quick-action.secondary { border-left: 4px solid var(--text-secondary); }
+
+        .quick-action i {
+            font-size: 1.125rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* TABLE */
+        .table-container {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+        }
+
+        .table-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .table-header h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th,
+        .table td {
+            padding: 1rem 1.5rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .table th {
+            background: var(--bg-tertiary);
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+        }
+
+        .table tbody tr {
+            transition: background-color 0.2s ease;
+        }
+
+        .table tbody tr:hover {
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: capitalize;
+        }
+
+        .badge.success {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--accent);
+        }
+
+        .badge.warning {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+
+        .badge.info {
+            background: rgba(59, 130, 246, 0.2);
+            color: var(--info);
+        }
+
+        /* ALERT CARDS */
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-top: 2rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .alert.danger {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--danger);
+        }
+
+        .alert .alert-icon {
+            color: var(--danger);
+            font-size: 1.125rem;
+            margin-top: 0.125rem;
+        }
+
+        .alert .alert-content h4 {
+            color: var(--danger);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .alert .alert-content p {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .alert .alert-link {
+            color: var(--danger);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+
+        .alert .alert-link:hover {
+            text-decoration: underline;
+        }
+
+        /* EMPTY STATE */
+        .empty-state {
+            padding: 3rem 2rem;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state p {
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .empty-state a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .empty-state a:hover {
+            text-decoration: underline;
+        }
+
+        /* LOADING */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(16, 185, 129, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--accent);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 70px;
+            }
+            
+            .main-content {
+                margin-left: 70px;
+            }
+            
+            .sidebar .nav-item span {
+                display: none;
+            }
+            
+            .logo-section h1 {
+                display: none;
+            }
+            
+            .user-info-sidebar {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                position: fixed;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+            
+            .header {
+                padding: 1rem;
+            }
+            
+            .kpi-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+            
+            .actions-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .quick-action span {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .kpi-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .kpi-value {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* THEME TOGGLE */
+        .theme-toggle {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 50px;
+            height: 50px;
+            background: var(--accent);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.25rem;
+            cursor: pointer;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+            background: var(--accent-hover);
+        }
+
+        /* MOBILE MENU TOGGLE */
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            width: 40px;
+            height: 40px;
+            background: var(--accent);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="layout">
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="logo-section">
+                {% if empresa_logo %}
+                <img src="{{ url_for('static', filename=empresa_logo) }}" alt="Logo {{ empresa_nombre }}">
+                {% else %}
+                <div class="logo-placeholder">
+                    {{ empresa_nombre[:2]|upper if empresa_nombre else 'ST' }}
+                </div>
+                {% endif %}
+                <h1>{{ empresa_nombre }}</h1>
+            </div>
+            
+            <nav class="nav-menu">
+                <a href="{{ url_for('dashboard') }}" class="nav-item active">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </a>
+                                
+                <a href="{{ url_for('productos') }}" class="nav-item">
+                    <i class="fas fa-box"></i>
+                    <span>Productos</span>
+                </a>
+                
+                <a href="{{ url_for('clientes') }}" class="nav-item">
+                    <i class="fas fa-users"></i>
+                    <span>Clientes</span>
+                </a>
+                
+                <a href="{{ url_for('ventas') }}" class="nav-item">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Ventas</span>
+                </a>
+                
+                <a href="{{ url_for('pos') }}" class="nav-item">
+                    <i class="fas fa-cash-register"></i>
+                    <span>Punto de Venta</span>
+                </a>
+                
+                {% if rol_actual in ['admin', 'root'] %}
+                <a href="{{ url_for('usuarios') }}" class="nav-item">
+                    <i class="fas fa-user-cog"></i>
+                    <span>Usuarios</span>
+                </a>
+                
+                <a href="{{ url_for('reportes') }}" class="nav-item">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Reportes</span>
+                </a>
+                {% endif %}
+                
+                <a href="{{ url_for('configuracion') }}" class="nav-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Configuración</span>
+                </a>
+            </nav>
+            
+            <div class="nav-footer">
+                <a href="{{ url_for('logout') }}" class="nav-item logout-btn" onclick="return confirm('¿Cerrar sesión?')">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Cerrar Sesión</span>
+                </a>
+                
+                <div class="user-info-sidebar">
+                    <div><strong>{{ usuario_actual }}</strong></div>
+                    <div>{{ rol_actual|title }}</div>
+                    <div style="margin-top: 0.5rem;">© SysTec Software</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            <header class="header">
+                <div class="welcome-text">
+                    <h2>Dashboard</h2>
+                    <p>Resumen general del sistema</p>
+                </div>
+                
+                <div class="user-info">
+                    <div class="user-details">
+                        <div class="username">{{ usuario_actual }}</div>
+                        <div class="role">{{ rol_actual }}</div>
+                    </div>
+                    <div class="user-avatar">
+                        {{ usuario_actual[0]|upper if usuario_actual else 'U' }}
+                    </div>
+                </div>
+            </header>
+            
+            <div class="content">
+                <!-- Flash Messages -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">
+                        <i class="fas fa-{% if category == 'success' %}check-circle{% elif category == 'danger' %}exclamation-circle{% elif category == 'warning' %}exclamation-triangle{% else %}info-circle{% endif %}"></i>
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% endwith %}
+
+                <!-- KPI CARDS -->
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <div class="kpi-title">Ventas Hoy</div>
+                            <div class="kpi-icon success">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                        </div>
+                        <div class="kpi-value">{{ stats_hoy.ventas_hoy if stats_hoy else 0 }}</div>
+                        <div class="kpi-change">Transacciones del día</div>
+                    </div>
+                    
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <div class="kpi-title">Total Vendido Hoy</div>
+                            <div class="kpi-icon success">
+                                <i class="fas fa-dollar-sign"></i>
+                            </div>
+                        </div>
+                        <div class="kpi-value">${{ "%.2f"|format(stats_hoy.total_hoy if stats_hoy else 0) }}</div>
+                        <div class="kpi-change">Ingresos del día</div>
+                    </div>
+                    
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <div class="kpi-title">Productos Activos</div>
+                            <div class="kpi-icon info">
+                                <i class="fas fa-boxes"></i>
+                            </div>
+                        </div>
+                        <div class="kpi-value">{{ productos_activos }}</div>
+                        <div class="kpi-change">En catálogo</div>
+                    </div>
+                    
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <div class="kpi-title">Stock Bajo</div>
+                            <div class="kpi-icon {{ 'danger' if productos_bajos > 0 else 'success' }}">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                        </div>
+                        <div class="kpi-value">{{ productos_bajos }}</div>
+                        <div class="kpi-change">{{ 'Requieren atención' if productos_bajos > 0 else 'Todo en orden' }}</div>
+                    </div>
+                </div>
+                
+                <!-- ACCIONES RÁPIDAS -->
+                <div class="actions-grid">
+                    <a href="{{ url_for('punto_venta') }}" class="quick-action success">
+                        <i class="fas fa-cash-register"></i>
+                        <span>Punto de Venta</span>
+                    </a>
+                    
+                    <a href="{{ url_for('nueva_venta') }}" class="quick-action info">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>Nueva Venta</span>
+                    </a>
+                    
+                    <a href="{{ url_for('agregar_producto') }}" class="quick-action warning">
+                        <i class="fas fa-box"></i>
+                        <span>Agregar Producto</span>
+                    </a>
+                    
+                    <a href="{{ url_for('productos') }}" class="quick-action secondary">
+                        <i class="fas fa-eye"></i>
+                        <span>Ver Inventario</span>
+                    </a>
+                    
+                    <a href="{{ url_for('ventas') }}" class="quick-action secondary">
+                        <i class="fas fa-history"></i>
+                        <span>Historial Ventas</span>
+                    </a>
+                </div>
+                
+                <!-- ÚLTIMAS VENTAS -->
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3>Últimas Ventas</h3>
+                    </div>
+                    
+                    {% if ultimas_ventas %}
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Fecha</th>
+                                <th>Cliente</th>
+                                <th>Total</th>
+                                <th>Método</th>
+                                <th>Usuario</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for venta in ultimas_ventas %}
+                            <tr>
+                                <td><strong>#{{ venta.id }}</strong></td>
+                                <td>
+                                    {% if venta.fecha %}
+                                        {% if venta.fecha is string %}
+                                            {{ venta.fecha[:16]|replace('-', '/')|replace(' ', ' ') }}
+                                        {% else %}
+                                            {{ venta.fecha.strftime('%d/%m/%Y %H:%M') }}
+                                        {% endif %}
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </td>
+                                <td>{{ venta.cliente_nombre or 'Cliente general' }}</td>
+                                <td><strong>${{ "%.2f"|format(venta.total) }}</strong></td>
+                                <td>
+                                    <span class="badge success">{{ venta.metodo_pago|title }}</span>
+                                </td>
+                                <td>{{ venta.username }}</td>
+                                <td>
+                                    <a href="{{ url_for('detalle_venta', venta_id=venta.id) }}" 
+                                       style="color: var(--accent); text-decoration: none;">
+                                        <i class="fas fa-eye"></i> Ver
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <p>No hay ventas registradas aún</p>
+                        <a href="{{ url_for('punto_venta') }}">
+                            <i class="fas fa-plus"></i> Registrar primera venta
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- ALERTAS DE STOCK -->
+                {% if productos_bajos > 0 %}
+                <div class="alert danger">
+                    <div class="alert-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="alert-content">
+                        <h4>Alerta de Stock</h4>
+                        <p>
+                            Hay {{ productos_bajos }} producto{{ 's' if productos_bajos != 1 else '' }} con stock por debajo del umbral mínimo 
+                            ({{ umbral }} unidades). Es recomendable reabastecer estos productos pronto.
+                        </p>
+                        <a href="{{ url_for('productos') }}" class="alert-link">
+                            <i class="fas fa-arrow-right"></i> Revisar inventario
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </main>
+    </div>
+
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="Cambiar tema">
+        <i class="fas fa-{{ 'sun' if modo_oscuro else 'moon' }}"></i>
+    </button>
+
+    <script>
+        // Variables globales
+        let sidebarOpen = false;
+
+        // Toggle Mobile Menu
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            sidebarOpen = !sidebarOpen;
+            
+            if (sidebarOpen) {
+                sidebar.classList.add('mobile-open');
+            } else {
+                sidebar.classList.remove('mobile-open');
+            }
+        }
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const toggle = document.querySelector('.mobile-menu-toggle');
+            
+            if (window.innerWidth <= 768 && sidebarOpen) {
+                if (!sidebar.contains(event.target) && !toggle.contains(event.target)) {
+                    sidebar.classList.remove('mobile-open');
+                    sidebarOpen = false;
+                }
+            }
+        });
+
+        // Toggle Theme
+        async function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            const isDark = newTheme === 'dark';
+            
+            try {
+                const response = await fetch('/api/tema/cambiar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ modo_oscuro: isDark })
+                });
+                
+                if (response.ok) {
+                    document.documentElement.setAttribute('data-theme', newTheme);
+                    
+                    // Update theme toggle icon
+                    const themeIcon = document.querySelector('.theme-toggle i');
+                    themeIcon.className = `fas fa-${isDark ? 'sun' : 'moon'}`;
+                    
+                    // Show success message
+                    showToast('Tema cambiado correctamente', 'success');
+                } else {
+                    showToast('Error al cambiar tema', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Error al cambiar tema', 'error');
+            }
+        }
+
+        // Toast notification system
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check' : type === 'error' ? 'times' : 'info'}-circle"></i>
+                ${message}
+            `;
+            
+            // Add toast styles
+            toast.style.cssText = `
+                position: fixed;
+                top: 2rem;
+                right: 2rem;
+                background: var(--bg-secondary);
+                color: var(--text-primary);
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                border-left: 4px solid var(--${type === 'success' ? 'accent' : type === 'error' ? 'danger' : 'info'});
+                box-shadow: var(--card-shadow);
+                z-index: 10000;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                transform: translateX(400px);
+                transition: transform 0.3s ease;
+            `;
+            
+            document.body.appendChild(toast);
+            
+            // Animate in
+            setTimeout(() => {
+                toast.style.transform = 'translateX(0)';
+            }, 100);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                toast.style.transform = 'translateX(400px)';
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 300);
+            }, 3000);
+        }
+
+        // Navigation highlighting
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPath = window.location.pathname;
+            const navItems = document.querySelectorAll('.nav-item');
+            
+            navItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('href') === currentPath) {
+                    item.classList.add('active');
+                }
+            });
+        });
+
+        // Auto-refresh stats every 5 minutes
+        setInterval(async function() {
+            if (document.visibilityState === 'visible') {
+                try {
+                    const response = await fetch('/api/dashboard/stats');
+                    if (response.ok) {
+                        const data = await response.json();
+                        updateStats(data);
+                    }
+                } catch (error) {
+                    console.error('Error updating stats:', error);
+                }
+            }
+        }, 300000); // 5 minutes
+
+        // Update stats in real-time
+        function updateStats(data) {
+            if (data.hoy) {
+                document.querySelector('.kpi-value').textContent = data.hoy.ventas_hoy || 0;
+                document.querySelectorAll('.kpi-value')[1].textContent = `${(data.hoy.total_hoy || 0).toFixed(2)}`;
+            }
+            
+            if (data.productos_bajos !== undefined) {
+                const stockCard = document.querySelectorAll('.kpi-value')[3];
+                stockCard.textContent = data.productos_bajos;
+                
+                // Update icon color
+                const stockIcon = stockCard.parentElement.querySelector('.kpi-icon');
+                stockIcon.className = `kpi-icon ${data.productos_bajos > 0 ? 'danger' : 'success'}`;
+            }
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(event) {
+            // Alt + P = Punto de Venta
+            if (event.altKey && event.key === 'p') {
+                event.preventDefault();
+                window.location.href = '{{ url_for("punto_venta") }}';
+            }
+            
+            // Alt + N = Nueva Venta
+            if (event.altKey && event.key === 'n') {
+                event.preventDefault();
+                window.location.href = '{{ url_for("nueva_venta") }}';
+            }
+            
+            // Alt + I = Inventario
+            if (event.altKey && event.key === 'i') {
+                event.preventDefault();
+                window.location.href = '{{ url_for("productos") }}';
+            }
+            
+            // Alt + T = Toggle Theme
+            if (event.altKey && event.key === 't') {
+                event.preventDefault();
+                toggleTheme();
+            }
+        });
+
+        // Loading states for async operations
+        function showLoading(element) {
+            const originalText = element.textContent;
+            element.innerHTML = '<span class="loading"></span> Cargando...';
+            element.disabled = true;
+            
+            return function hideLoading() {
+                element.textContent = originalText;
+                element.disabled = false;
+            };
+        }
+
+        // Initialize tooltips and other interactive elements
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add hover effects to cards
+            const cards = document.querySelectorAll('.kpi-card, .quick-action');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-2px)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+
+            // Preload critical pages for better UX
+            const criticalPages = [
+                '{{ url_for("punto_venta") }}',
+                '{{ url_for("productos") }}',
+                '{{ url_for("nueva_venta") }}'
+            ];
+            
+            criticalPages.forEach(url => {
+                const link = document.createElement('link');
+                link.rel = 'prefetch';
+                link.href = url;
+                document.head.appendChild(link);
+            });
+
+            // Initialize performance monitoring
+            if ('performance' in window) {
+                const loadTime = performance.timing.loadEventEnd - performance.timing.navigationStart;
+                if (loadTime > 3000) {
+                    console.warn(`Página cargó lento: ${loadTime}ms`);
+                }
+            }
+        });
+
+        // Error handling for failed requests
+        window.addEventListener('unhandledrejection', function(event) {
+            console.error('Promise rejection:', event.reason);
+            showToast('Error inesperado en la aplicación', 'error');
+        });
+
+        // Service worker registration for offline support (optional)
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').catch(function(error) {
+                console.log('Service Worker registration failed:', error);
+            });
+        }
+
+        console.log('🚀 SysTec Ventas Dashboard cargado correctamente');
+        console.log('⌨️ Atajos de teclado:');
+        console.log('   Alt + P: Punto de Venta');
+        console.log('   Alt + N: Nueva Venta');
+        console.log('   Alt + I: Inventario');
+        console.log('   Alt + T: Cambiar Tema');
+    </script>
+</body>
+</html>

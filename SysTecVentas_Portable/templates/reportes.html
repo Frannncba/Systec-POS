@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reportes - {{ empresa_nombre }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            {% if modo_oscuro %}
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --accent: #10b981;
+            --border: #475569;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            {% else %}
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-tertiary: #e2e8f0;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --accent: #10b981;
+            --border: #e2e8f0;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            {% endif %}
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR (Copiado de dashboard) */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo-section {
+            padding: 2rem 1.5rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo-section img {
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            object-fit: cover;
+            margin-bottom: 1rem;
+            box-shadow: var(--card-shadow);
+        }
+
+        .logo-section h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .nav-menu {
+            flex: 1;
+            padding: 1rem 0;
+        }
+
+        .nav-item {
+            display: block;
+            padding: 1rem 1.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item:hover {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent);
+        }
+
+        .nav-item.active {
+            background: var(--accent);
+            color: white;
+            border-radius: 8px;
+            margin: 0 1rem;
+        }
+
+        .nav-item i {
+            width: 20px;
+            margin-right: 0.75rem;
+        }
+
+        .nav-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .logout-btn {
+            color: var(--danger) !important;
+        }
+
+        .logout-btn:hover {
+            background: rgba(239, 68, 68, 0.1) !important;
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        /* CARDS */
+        .report-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .report-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+        }
+
+        .report-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 1rem;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th,
+        .table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .table th {
+            background: var(--bg-tertiary);
+            font-weight: 600;
+        }
+
+        .table tbody tr:hover {
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            background: var(--accent);
+            color: white;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+            }
+            
+            .sidebar .nav-item span {
+                display: none;
+            }
+            
+            .logo-section h1 {
+                display: none;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+            
+            .report-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="layout">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="logo-section">
+                {% if empresa_logo %}
+                <img src="{{ url_for('static', filename=empresa_logo) }}" alt="Logo {{ empresa_nombre }}">
+                {% else %}
+                <div style="width: 80px; height: 80px; background: var(--accent); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; color: white; font-weight: bold; font-size: 1.5rem;">
+                    ST
+                </div>
+                {% endif %}
+                <h1>{{ empresa_nombre }}</h1>
+            </div>
+            
+            <nav class="nav-menu">
+                <a href="{{ url_for('dashboard') }}" class="nav-item">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </a>
+                
+                <a href="{{ url_for('productos') }}" class="nav-item">
+                    <i class="fas fa-box"></i>
+                    <span>Productos</span>
+                </a>
+                
+                <a href="{{ url_for('clientes') }}" class="nav-item">
+                    <i class="fas fa-users"></i>
+                    <span>Clientes</span>
+                </a>
+                
+                <a href="{{ url_for('ventas') }}" class="nav-item">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Ventas</span>
+                </a>
+                
+                <a href="{{ url_for('nueva_venta') }}" class="nav-item">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Nueva Venta</span>
+                </a>
+                
+                <a href="{{ url_for('reportes') }}" class="nav-item active">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Reportes</span>
+                </a>
+                
+                <a href="{{ url_for('configuracion') }}" class="nav-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Configuración</span>
+                </a>
+            </nav>
+            
+            <div class="nav-footer">
+                <a href="{{ url_for('logout') }}" class="nav-item logout-btn" onclick="return confirm('¿Cerrar sesión?')">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Cerrar Sesión</span>
+                </a>
+                
+                <div style="margin-top: 1rem; text-align: center; font-size: 0.75rem; color: var(--text-secondary);">
+                    <div>Usuario: {{ usuario_actual }}</div>
+                    <div>© SysTec Software</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            <header class="header">
+                <div class="welcome-text">
+                    <h2>Reportes</h2>
+                    <p>Análisis de ventas y estadísticas</p>
+                </div>
+                
+                <div style="display: flex; gap: 1rem;">
+                    <a href="{{ url_for('exportar_ventas') }}" class="btn">
+                        <i class="fas fa-download"></i> Exportar Ventas
+                    </a>
+                </div>
+            </header>
+            
+            <div class="content">
+                <div class="report-grid">
+                    <!-- VENTAS DIARIAS -->
+                    <div class="report-card">
+                        <h3><i class="fas fa-chart-line"></i> Ventas por Día (Últimos 30 días)</h3>
+                        <div class="chart-container">
+                            <canvas id="ventasDiariasChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- MÉTODOS DE PAGO -->
+                    <div class="report-card">
+                        <h3><i class="fas fa-credit-card"></i> Métodos de Pago</h3>
+                        <div class="chart-container">
+                            <canvas id="metodosPagoChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- PRODUCTOS MÁS VENDIDOS -->
+                <div class="report-card">
+                    <h3><i class="fas fa-trophy"></i> Productos Más Vendidos</h3>
+                    {% if productos_vendidos %}
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Cantidad Vendida</th>
+                                <th>Ingresos</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for producto in productos_vendidos %}
+                            <tr>
+                                <td>{{ producto.nombre }}</td>
+                                <td>{{ producto.total_vendido }}</td>
+                                <td><strong>{{ producto.ingresos|currency }}</strong></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <p style="text-align: center; color: var(--text-secondary); padding: 2rem;">
+                        No hay datos de productos vendidos aún.
+                    </p>
+                    {% endif %}
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Configuración de Chart.js para tema oscuro/claro
+        const isDarkMode = {{ 'true' if modo_oscuro else 'false' }};
+        const textColor = isDarkMode ? '#cbd5e1' : '#64748b';
+        const gridColor = isDarkMode ? '#475569' : '#e2e8f0';
+        
+        Chart.defaults.color = textColor;
+        Chart.defaults.borderColor = gridColor;
+
+        // Datos de ventas diarias
+        const ventasDiariasDatos = [
+            {% for venta in ventas_diarias %}
+            {
+                fecha: '{{ venta.fecha }}',
+                cantidad: {{ venta.cantidad }},
+                total: {{ venta.total }}
+            }{% if not loop.last %},{% endif %}
+            {% endfor %}
+        ];
+
+        // Gráfico de ventas diarias
+        const ctxVentas = document.getElementById('ventasDiariasChart').getContext('2d');
+        new Chart(ctxVentas, {
+            type: 'line',
+            data: {
+                labels: ventasDiariasDatos.map(v => {
+                    const fecha = new Date(v.fecha);
+                    return fecha.toLocaleDateString('es-AR', { month: 'short', day: 'numeric' });
+                }),
+                datasets: [{
+                    label: 'Ventas ($)',
+                    data: ventasDiariasDatos.map(v => v.total),
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return ' + value.toFixed(2);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Datos de métodos de pago
+        const metodosPagoDatos = [
+            {% for metodo in metodos_pago %}
+            {
+                metodo: '{{ metodo.metodo_pago|title }}',
+                cantidad: {{ metodo.cantidad }},
+                total: {{ metodo.total }}
+            }{% if not loop.last %},{% endif %}
+            {% endfor %}
+        ];
+
+        // Gráfico de métodos de pago
+        const ctxMetodos = document.getElementById('metodosPagoChart').getContext('2d');
+        new Chart(ctxMetodos, {
+            type: 'doughnut',
+            data: {
+                labels: metodosPagoDatos.map(m => m.metodo),
+                datasets: [{
+                    data: metodosPagoDatos.map(m => m.total),
+                    backgroundColor: [
+                        '#10b981',
+                        '#3b82f6',
+                        '#f59e0b',
+                        '#ef4444',
+                        '#8b5cf6'
+                    ],
+                    borderWidth: 2,
+                    borderColor: isDarkMode ? '#1e293b' : '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.parsed || 0;
+                                return label + ':  + value.toFixed(2);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Actualizar gráficos al cambiar tema
+        function actualizarTemaGraficos() {
+            const nuevoTextColor = document.documentElement.style.getPropertyValue('--text-secondary') || textColor;
+            const nuevoGridColor = document.documentElement.style.getPropertyValue('--border') || gridColor;
+            
+            Chart.defaults.color = nuevoTextColor;
+            Chart.defaults.borderColor = nuevoGridColor;
+        }
+
+        // Función para exportar datos como imagen
+        function exportarGrafico(chartId, nombre) {
+            const canvas = document.getElementById(chartId);
+            const url = canvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.download = nombre + '_' + new Date().toISOString().slice(0, 10) + '.png';
+            link.href = url;
+            link.click();
+        }
+
+        // Agregar botones de exportación si es necesario
+        document.addEventListener('DOMContentLoaded', function() {
+            // Verificar si hay datos para mostrar alertas
+            if (ventasDiariasDatos.length === 0) {
+                document.querySelector('#ventasDiariasChart').closest('.report-card').innerHTML = `
+                    <h3><i class="fas fa-chart-line"></i> Ventas por Día (Últimos 30 días)</h3>
+                    <div style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+                        <i class="fas fa-chart-line" style="font-size: 3rem; opacity: 0.3; margin-bottom: 1rem;"></i>
+                        <p>No hay datos de ventas en los últimos 30 días</p>
+                    </div>
+                `;
+            }
+
+            if (metodosPagoDatos.length === 0) {
+                document.querySelector('#metodosPagoChart').closest('.report-card').innerHTML = `
+                    <h3><i class="fas fa-credit-card"></i> Métodos de Pago</h3>
+                    <div style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+                        <i class="fas fa-credit-card" style="font-size: 3rem; opacity: 0.3; margin-bottom: 1rem;"></i>
+                        <p>No hay datos de métodos de pago</p>
+                    </div>
+                `;
+            }
+        });
+
+        // Auto-refresh cada 10 minutos
+        setInterval(function() {
+            if (document.visibilityState === 'visible') {
+                location.reload();
+            }
+        }, 600000);
+    </script>
+</body>
+</html>

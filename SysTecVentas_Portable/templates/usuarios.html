@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Usuarios - SysTec Ventas</title>
+    <style>
+        body { font-family: sans-serif; background: #f4f4f4; padding: 20px; }
+        .box { background: white; padding: 20px; margin-bottom: 30px; border-radius: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        input, select, button { width: 100%; padding: 10px; margin: 8px 0; }
+    </style>
+</head>
+<body>
+  
+    {% include 'navbar.html' %}
+
+    <h1>👥 Gestión de Usuarios</h1>
+
+    <div class="box">
+        <h2>Crear nuevo usuario</h2>
+        <form method="POST" action="/usuario/nuevo">
+            <input type="text" name="usuario" placeholder="Usuario" required>
+            <input type="password" name="clave" placeholder="Contraseña" required>
+            <select name="rol" required>
+                <option value="dueño">Dueño</option>
+                <option value="admin">Administrador</option>
+                <option value="cajero">Cajero</option>
+                <option value="vendedor">Vendedor</option>
+            </select>
+            <select name="activo" required>
+                <option value="1">Activo</option>
+                <option value="0">Inactivo</option>
+            </select>
+            <button type="submit">Agregar usuario</button>
+        </form>
+    </div>
+
+    <div class="box">
+        <h2>Usuarios registrados</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Usuario</th>
+                    <th>Rol</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in usuarios %}
+                <tr>
+                    <td>{{ u.usuario }}</td>
+                    <td>{{ u.rol }}</td>
+                    <td>{{ "Activo" if u.activo else "Inactivo" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <a href="/dashboard">⬅ Volver al panel</a>
+
+</body>
+</html>

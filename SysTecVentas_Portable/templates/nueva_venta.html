@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}Nueva Venta{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-lg p-8 mt-8 border border-blue-100">
+    <h2 class="text-2xl font-bold mb-6 text-blue-700 flex items-center">
+        <i class="fas fa-cash-register mr-2"></i> Registrar Nueva Venta
+    </h2>
+    <form method="post">
+        <div class="mb-6">
+            <label class="block font-semibold mb-2 text-blue-800">Productos:</label>
+            <div class="overflow-x-auto rounded-lg border border-blue-50">
+                <table class="min-w-full bg-blue-50 rounded-lg">
+                    <thead>
+                        <tr class="text-blue-600 text-sm">
+                            <th class="py-2 px-3">Seleccionar</th>
+                            <th class="py-2 px-3">Producto</th>
+                            <th class="py-2 px-3">Precio</th>
+                            <th class="py-2 px-3">Stock</th>
+                            <th class="py-2 px-3">Cantidad</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in productos %}
+                        <tr class="hover:bg-blue-100 transition">
+                            <td class="py-2 px-3 text-center">
+                                <input type="checkbox" name="producto_id" value="{{ p.id }}" id="prod{{ p.id }}">
+                            </td>
+                            <td class="py-2 px-3">
+                                <label for="prod{{ p.id }}" class="font-medium">{{ p.nombre }}</label>
+                            </td>
+                            <td class="py-2 px-3 text-green-700">${{ "%.2f"|format(p.precio) }}</td>
+                            <td class="py-2 px-3 text-blue-700">{{ p.stock }}</td>
+                            <td class="py-2 px-3">
+                                <input type="number" name="cantidad" min="0" max="{{ p.stock }}" value="0"
+                                    class="w-16 rounded border border-blue-200 px-2 py-1 text-center focus:outline-none focus:ring-2 focus:ring-blue-200"
+                                    disabled
+                                    onchange="actualizarTotal()"
+                                >
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="mb-6">
+            <label class="block font-semibold mb-2 text-blue-800">Método de Pago:</label>
+            <select name="metodo_pago" id="metodo_pago" onchange="toggleCliente()"
+                class="w-full rounded border border-blue-200 px-3 py-2 bg-blue-50 text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-200">
+                <option value="efectivo">Efectivo</option>
+                <option value="tarjeta_credito">Tarjeta de Crédito</option>
+                <option value="tarjeta_debito">Tarjeta de Débito</option>
+                <option value="transferencia">Transferencia Bancaria</option>
+                <option value="qr">QR</option>
+                <option value="mercado_pago">Mercado Pago</option>
+                <option value="cuenta_corriente">Cuenta Corriente</option>
+            </select>
+        </div>
+
+        <div class="mb-6" id="cliente_select" style="display:none;">
+            <label class="block font-semibold mb-2 text-blue-800">Cliente (solo para cuenta corriente):</label>
+            <select name="cliente_id"
+                class="w-full rounded border border-blue-200 px-3 py-2 bg-blue-50 text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-200">
+                <option value="">Seleccionar cliente</option>
+                {% for c in clientes %}
+                <option value="{{ c.id }}">{{ c.nombre }}</option>
+                {% endfor %}
+            </select>
+            <a href="{{ url_for('clientes') }}" class="text-blue-600 text-sm ml-2">Agregar nuevo cliente</a>
+        </div>
+
+        <!-- Mejora: Resumen de total y validación visual -->
+        <div class="mb-6">
+            <div class="flex items-center justify-between bg-blue-50 rounded-lg px-4 py-3 border border-blue-100">
+                <span class="font-semibold text-blue-700">Total:</span>
+                <span id="totalVenta" class="text-2xl font-bold text-green-600">$0.00</span>
+            </div>
+        </div>
+
+        <div class="flex items-center justify-between mt-8">
+            <button type="submit"
+                class="bg-blue-400 hover:bg-blue-500 text-white font-bold py-2 px-6 rounded-lg shadow transition">
+                <i class="fas fa-check mr-2"></i>Registrar Venta
+            </button>
+            <a href="{{ url_for('ventas') }}"
+                class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-6 rounded-lg shadow ml-2 transition">
+                Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+
+<script>
+function toggleCliente() {
+    var metodo = document.getElementById('metodo_pago').value;
+    document.getElementById('cliente_select').style.display = (metodo === 'cuenta_corriente') ? 'block' : 'none';
+}
+document.addEventListener('DOMContentLoaded', toggleCliente);
+
+function actualizarTotal() {
+    let total = 0;
+    let algunoSeleccionado = false;
+    const filas = document.querySelectorAll('tbody tr');
+    filas.forEach(fila => {
+        const checkbox = fila.querySelector('input[type="checkbox"]');
+        const cantidadInput = fila.querySelector('input[type="number"]');
+        const precio = parseFloat(fila.querySelector('.text-green-700').textContent.replace('$',''));
+        if (checkbox.checked) {
+            cantidadInput.disabled = false;
+            const cantidad = parseInt(cantidadInput.value) || 0;
+            if (cantidad > 0) algunoSeleccionado = true;
+            total += precio * cantidad;
+            fila.classList.add('bg-blue-100');
+        } else {
+            cantidadInput.disabled = true;
+            cantidadInput.value = 0;
+            fila.classList.remove('bg-blue-100');
+        }
+    });
+    document.getElementById('totalVenta').textContent = '$' + total.toFixed(2);
+    return algunoSeleccionado;
+}
+
+// Habilita/deshabilita cantidad según el checkbox
+document.querySelectorAll('input[type="checkbox"][name="producto_id"]').forEach(cb => {
+    cb.addEventListener('change', actualizarTotal);
+});
+document.querySelectorAll('input[type="number"][name="cantidad"]').forEach(inp => {
+    inp.addEventListener('input', actualizarTotal);
+});
+document.addEventListener('DOMContentLoaded', actualizarTotal);
+
+// Validación al enviar el formulario
+document.querySelector('form').addEventListener('submit', function(e) {
+    if (!actualizarTotal()) {
+        alert('Debes seleccionar al menos un producto y una cantidad mayor a 0.');
+        e.preventDefault();
+    }
+});
+</script>
+{% endblock %}
+
+@app.route('/productos/exportar')
+def exportar_productos():
+    import csv, io
+    conn = get_db_connection()
+    productos = conn.execute("SELECT * FROM productos").fetchall()
+    conn.close()
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(['id', 'nombre', 'precio', 'precio_costo', 'stock'])
+    for p in productos:
+        writer.writerow([p['id'], p['nombre'], p['precio'], p['precio_costo'], p['stock']])
+    output.seek(0)
+    return Response(output, mimetype="text/csv", headers={"Content-Disposition":"attachment;filename=productos.csv"})

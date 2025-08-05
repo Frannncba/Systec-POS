@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="{{ 'dark' if modo_oscuro else 'light' }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle Venta #{{ venta.id }} - {{ empresa_nombre }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        :root[data-theme="dark"] {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --accent: #10b981;
+            --accent-hover: #059669;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --border: #475569;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        }
+
+        :root[data-theme="light"] {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-tertiary: #e2e8f0;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --accent: #10b981;
+            --accent-hover: #059669;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --border: #e2e8f0;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--accent);
+            text-decoration: none;
+            margin-bottom: 2rem;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .back-button:hover {
+            color: var(--accent-hover);
+        }
+
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-tertiary);
+        }
+
+        .card-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-item h4 {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+        }
+
+        .info-item p {
+            font-size: 1rem;
+            color: var(--text-primary);
+            font-weight: 500;
+            margin: 0;
+        }
+
+        .info-item.total p {
+            font-size: 1.5rem;
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: capitalize;
+        }
+
+        .badge.success {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--accent);
+        }
+
+        .badge.primary {
+            background: rgba(59, 130, 246, 0.2);
+            color: var(--info);
+        }
+
+        .badge.secondary {
+            background: rgba(100, 116, 139, 0.2);
+            color: var(--text-secondary);
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th,
+        .table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .table th {
+            background: var(--bg-tertiary);
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .table tbody tr:hover {
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .text-success {
+            color: var(--accent);
+        }
+
+        .fw-bold {
+            font-weight: 700;
+        }
+
+        .empty-state {
+            padding: 3rem 2rem;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .summary-row {
+            background: var(--bg-tertiary);
+            font-weight: 600;
+        }
+
+        .summary-row td {
+            border-top: 2px solid var(--border);
+            padding: 1.25rem 1rem;
+        }
+
+        .actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-outline-secondary {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-outline-secondary:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .btn-success {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: var(--accent-hover);
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+        }
+
+        .status-indicator.paid {
+            color: var(--accent);
+        }
+
+        .status-indicator.pending {
+            color: var(--warning);
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .container {
+                margin: 1rem auto;
+                padding: 0 0.5rem;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .table th,
+            .table td {
+                padding: 0.75rem 0.5rem;
+                font-size: 0.875rem;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                justify-content: center;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+                color: black;
+            }
+
+            .back-button,
+            .actions {
+                display: none;
+            }
+
+            .card {
+                border: 1px solid #ddd;
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="{{ url_for('pos') }}" class="back-button">
+            <i class="fas fa-arrow-left"></i>
+            Volver al historial
+        </a>
+
+        <!-- Información de la Venta -->
+        <div class="card">
+            <div class="card-header">
+                <h2>
+                    <i class="fas fa-receipt"></i>
+                    Detalle de Venta #{{ venta.id }}
+                </h2>
+            </div>
+            <div class="card-body">
+                <div class="info-grid">
+                    <div class="info-item">
+                        <h4>Fecha y Hora</h4>
+                        <p>
+                            {% if venta.fecha %}
+                                {% if venta.fecha is string %}
+                                    {{ venta.fecha[:19]|replace('-', '/')|replace(' ', ' ') }}
+                                {% else %}
+                                    {{ venta.fecha.strftime('%d/%m/%Y %H:%M:%S') }}
+                                {% endif %}
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </p>
+                    </div>
+                    
+                    <div class="info-item">
+                        <h4>Cliente</h4>
+                        <p>{{ venta.cliente_nombre }}</p>
+                    </div>
+                    
+                    <div class="info-item">
+                        <h4>Método de Pago</h4>
+                        <p>
+                            <span class="badge {% if venta.metodo_pago == 'efectivo' %}success{% elif venta.metodo_pago == 'tarjeta' %}primary{% else %}secondary{% endif %}">
+                                {{ venta.metodo_pago|title }}
+                            </span>
+                        </p>
+                    </div>
+                    
+                    <div class="info-item">
+                        <h4>Usuario</h4>
+                        <p>{{ venta.username }}</p>
+                    </div>
+                    
+                    <div class="info-item">
+                        <h4>Estado</h4>
+                        <p>
+                            <span class="status-indicator {% if venta.pagado %}paid{% else %}pending{% endif %}">
+                                <i class="fas fa-{% if venta.pagado %}check-circle{% else %}clock{% endif %}"></i>
+                                {{ 'Pagado' if venta.pagado else 'Pendiente' }}
+                            </span>
+                        </p>
+                    </div>
+                    
+                    <div class="info-item total">
+                        <h4>Total</h4>
+                        <p>${{ "%.2f"|format(venta.total) }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detalle de Productos -->
+        <div class="card">
+            <div class="card-header">
+                <h2>
+                    <i class="fas fa-box"></i>
+                    Productos Vendidos
+                </h2>
+            </div>
+            <div class="card-body">
+                {% if detalles %}
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th class="text-right">Cantidad</th>
+                                <th class="text-right">Precio Unit.</th>
+                                <th class="text-right">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for detalle in detalles %}
+                            <tr>
+                                <td>{{ detalle.producto_nombre }}</td>
+                                <td class="text-right">{{ detalle.cantidad }}</td>
+                                <td class="text-right">${{ "%.2f"|format(detalle.precio_unitario) }}</td>
+                                <td class="text-right fw-bold text-success">${{ "%.2f"|format(detalle.subtotal) }}</td>
+                            </tr>
+                            {% endfor %}
+                            <tr class="summary-row">
+                                <td colspan="3"><strong>TOTAL GENERAL</strong></td>
+                                <td class="text-right"><strong>${{ "%.2f"|format(venta.total) }}</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-box-open"></i>
+                    <h5>Sin productos</h5>
+                    <p>Esta venta no tiene productos asociados</p>
+                </div>
+                {% endif %}
+
+                <div class="actions">
+                    <button onclick="window.print()" class="btn btn-outline-secondary">
+                        <i class="fas fa-print"></i>
+                        Imprimir
+                    </button>
+                    <a href="{{ url_for('pos') }}" class="btn btn-success">
+                        <i class="fas fa-plus"></i>
+                        Nueva Venta
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Auto-hide flash messages
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add fade-in animation
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.3s ease';
+            
+            setTimeout(function() {
+                document.body.style.opacity = '1';
+            }, 100);
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                // ESC = Volver
+                if (e.key === 'Escape') {
+                    window.location.href = '{{ url_for("ventas") }}';
+                }
+                
+                // Ctrl + P = Imprimir
+                if (e.ctrlKey && e.key === 'p') {
+                    e.preventDefault();
+                    window.print();
+                }
+                
+                // Ctrl + N = Nueva Venta
+                if (e.ctrlKey && e.key === 'n') {
+                    e.preventDefault();
+                    window.location.href = '{{ url_for("pos") }}';
+                }
+            });
+        });
+
+        console.log('✅ Detalle venta #{{ venta.id }} loaded');
+    </script>
+</body>
+</html>

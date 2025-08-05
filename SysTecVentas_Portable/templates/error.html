@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Error {{ error_code }} - {{ empresa_nombre }}{% endblock %}
+
+{% block content %}
+<div class="content">
+    <div class="empty-state">
+        <i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>
+        <h5>Error {{ error_code }}</h5>
+        <p>{{ error_message or 'Ha ocurrido un error inesperado.' }}</p>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-success">
+            <i class="fas fa-home"></i> Volver al Inicio
+        </a>
+    </div>
+</div>
+{% endblock %}

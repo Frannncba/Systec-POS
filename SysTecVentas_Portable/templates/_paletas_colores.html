@@ -1,0 +1,92 @@
+<div class="form-group">
+    <label class="form-label">
+        <i class="fas fa-palette"></i> Paleta de Colores
+    </label>
+    
+    <div class="color-palette">
+        {% for key, paleta in paletas.items() %}
+        <div class="palette-card {% if config.paleta_activa == key %}active{% endif %}" onclick="seleccionarPaleta('{{ key }}')">
+            <div class="color-preview">
+                <div class="color-circle" style="background: {{ paleta.primario }};"></div>
+                <div class="color-circle" style="background: {{ paleta.secundario }};"></div>
+                <div class="color-circle" style="background: {{ paleta.acento }};"></div>
+            </div>
+            <h4>{{ paleta.nombre }}</h4>
+            <input type="radio" name="paleta_colores" value="{{ key }}" {% if config.paleta_activa == key %}checked{% endif %} style="display: none;">
+        </div>
+        {% endfor %}
+        
+        <!-- Opción de colores personalizados -->
+        <div class="palette-card {% if config.paleta_activa == 'personalizada' %}active{% endif %}" onclick="seleccionarPaleta('personalizada')">
+            <div class="color-preview">
+                <div class="color-circle" style="background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1);"></div>
+            </div>
+            <h4>Personalizada</h4>
+            <input type="radio" name="paleta_colores" value="personalizada" {% if config.paleta_activa == 'personalizada' %}checked{% endif %} style="display: none;">
+        </div>
+    </div>
+
+    <!-- Controles de colores personalizados -->
+    <div id="colores-personalizados" style="display: {% if config.paleta_activa == 'personalizada' %}block{% else %}none{% endif %}; margin-top: 2rem;">
+        <h4 style="margin-bottom: 1rem;">Colores Personalizados</h4>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+            <div>
+                <label class="form-label">Color Primario</label>
+                <input type="color" name="color_primario" class="color-input" value="#F8BBD9">
+            </div>
+            <div>
+                <label class="form-label">Color Secundario</label>
+                <input type="color" name="color_secundario" class="color-input" value="#E4C1F9">
+            </div>
+            <div>
+                <label class="form-label">Color Acento</label>
+                <input type="color" name="color_acento" class="color-input" value="#A8E6CF">
+            </div>
+            <div>
+                <label class="form-label">Color de Fondo</label>
+                <input type="color" name="color_fondo" class="color-input" value="#FDF2F8">
+            </div>
+            <div>
+                <label class="form-label">Color de Texto</label>
+                <input type="color" name="color_texto" class="color-input" value="#374151">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function seleccionarPaleta(paleta) {
+    // Remover clase active de todas las tarjetas
+    document.querySelectorAll('.palette-card').forEach(card => {
+        card.classList.remove('active');
+    });
+    
+    // Agregar clase active a la seleccionada
+    event.target.closest('.palette-card').classList.add('active');
+    
+    // Seleccionar el radio button correspondiente
+    document.querySelector(`input[value="${paleta}"]`).checked = true;
+    
+    // Mostrar/ocultar controles personalizados
+    const controlesPersonalizados = document.getElementById('colores-personalizados');
+    if (paleta === 'personalizada') {
+        controlesPersonalizados.style.display = 'block';
+    } else {
+        controlesPersonalizados.style.display = 'none';
+    }
+}
+
+// Cargar colores personalizados si existen
+{% if config.paleta_activa == 'personalizada' and config.colores_personalizados %}
+document.addEventListener('DOMContentLoaded', function() {
+    const colores = {{ config.colores_personalizados|safe }};
+    if (colores) {
+        document.querySelector('input[name="color_primario"]').value = colores.primario || '#F8BBD9';
+        document.querySelector('input[name="color_secundario"]').value = colores.secundario || '#E4C1F9';
+        document.querySelector('input[name="color_acento"]').value = colores.acento || '#A8E6CF';
+        document.querySelector('input[name="color_fondo"]').value = colores.fondo || '#FDF2F8';
+        document.querySelector('input[name="color_texto"]').value = colores.texto || '#374151';
+    }
+});
+{% endif %}
+</script>
